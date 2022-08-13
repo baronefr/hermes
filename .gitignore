@@ -1,0 +1,13 @@
+# tmp and locals
+**/__pycache__/
+hermes.egg-info/
+**/.ipynb_checkpoints/
+
+# private
+settings.ini
+auth.txt
+
+# other
+log/
+examples/*.png
+examples/*.jpg
