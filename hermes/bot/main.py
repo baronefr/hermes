@@ -51,6 +51,9 @@ class bot():
             self.unknown_command_ignore = config.getboolean('bot','unknown_command_ignore')
             #  ->    do not notify the user in case of mispelled command
             
+            # task path
+            self.task_path = str( config['task']['task_path'] )
+            
         except Exception as e:
             print('ERROR: config file parsing error')
             print(e)
@@ -60,7 +63,7 @@ class bot():
            SETTINGS_PATH + '/' + hermes.common.namespace['AUTH_FILE']
         )
         
-        self.bot = telebot.TeleBot(MYTOKEN)
+        self.bot = telebot.TeleBot(MYTOKEN, parse_mode='Markdown')
         self.log = botlogger(path = SETTINGS_PATH + '/' + LOGDIR)
         
 
@@ -79,6 +82,8 @@ class bot():
         self.bot.message_handler(commands=["register"])( hf.register )
         
         self.bot.message_handler(commands=["power"])( hf.query_power )
+        self.bot.message_handler(commands=["tasks"])( hf.query_tasks )
+        self.bot.message_handler(commands=["sentinel"])( hf.query_sentinel )
         self.bot.message_handler(commands=["rgb"])( hf.query_rgb )
         
         # Note:  If you want to create new commands, this is the place to link them!

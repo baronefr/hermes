@@ -15,6 +15,7 @@ import csv
 from datetime import datetime
 import shutil
 
+
 from tempfile import mkstemp
 from shutil import move, copymode
 from os import fdopen, remove
@@ -27,9 +28,9 @@ from hermes.common import *
 #
 
 # random name generator
-RAND_LOG_SIZE = 7    # size of the random id of the task, if no name is specified
-def get_random_log():
-    return ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(RAND_LOG_SIZE))
+RAND_ID_SIZE = 7    # size of the random id of the task, if no name is specified
+def get_random_id():
+    return ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(RAND_ID_SIZE))
 
 # log files placeholders
 TASK_IDX = hermes.common.namespace['TASK_INDEX']     # index of all tasks
@@ -54,7 +55,7 @@ def entry_head():
 def index_add(ifile : str, entries : dict) -> None:
     #       Add a new entry to the index file.
     #
-    #   Input:  - index file name
+    #     Arg:  - index file name
     #           - entries: dictionary with values to print
     #
     #  Remark:  the entries are ordered depending on TINDEX_FIELDS
@@ -66,10 +67,10 @@ def index_add(ifile : str, entries : dict) -> None:
     with open(ifile, mode='a') as tindex:
         tindex.write(",".join(to_print) + "\n")
 
-def index_touch(ifile: str, name : str, new_entries : dict) -> None: # pattern, subst
+def index_touch(ifile: str, iid : str, new_entries : dict) -> None: # pattern, subst
     #       Update an entry in the index file
     #
-    #   Input:  - index file name
+    #     Arg:  - index file name
     #           - entries: dictionary with values to print
     #
     #  Remark:  the entries are ordered depending on TINDEX_FIELDS
@@ -80,20 +81,19 @@ def index_touch(ifile: str, name : str, new_entries : dict) -> None: # pattern, 
     with fdopen(fh, 'w') as new_file:
         with open(ifile) as old_file:
             for line in old_file:
-                # change the correct row
-                if( line.startswith(name+',') ):
+                # change the correct row ...
+                if( line.startswith(iid+',') ):
                     old_entries = list( line.split(',') )
                     to_print = []
                     for idx, field in enumerate(hermes.common.namespace['TINDEX_FIELDS'].split(',')):
                         try:    to_print.append( str( new_entries[field] ) )
                         except: to_print.append( old_entries[idx] )
-                        
                     new_line = ",".join(to_print) + "\n"
-                # do not touch the others
-                else:
-                    new_line = line
                     
-                new_file.write(new_line)
+                # ... do not touch the others
+                else: new_line = line
+                
+                new_file.write(new_line) 
                 
     # copy file permissions
     copymode(ifile, abs_path)
@@ -115,52 +115,40 @@ def index_touch(ifile: str, name : str, new_entries : dict) -> None: # pattern, 
 #
 class tasklogger():
     
-    def __init__(self, path = None, name = None) -> None:
+    def __init__(self, path = None, alias = None) -> None:
     
         # take the timing at function call
         now = datetime.now()
         
-        if name is None:
-            # assign a random name (assume probabilities of conflict are null)
-            name = get_random_log()
-        self.name = name
+        # assign a random id (assume probabilities of conflict are null)
+        self.id = get_random_id()
+        
+        if alias is None: alias = self.id
         
         # set target files (Task index & private log file)
         self.__task_idx = path + TASK_IDX
-        self.__task_log = path + TASK_LOG.format( name )
+        self.__task_log = path + TASK_LOG.format( self.id )
         
         # check index access (create, if necessary)
         hermes.common.index_access(path, self.__task_idx, now.strftime(TIME_FORMAT) )
         
         # the properties to be written in index file (automatically ordered!)
-        ee = { 'name' : name, 'pid' : os.getpid(),
-               'status' : 'created',
+        ee = { 'id' : self.id, 'alias' : alias,
+               'pid' : os.getpid(), 'status' : 'created',
                'spawntime': now.strftime("%Y/%m/%d_%H:%M:%S") }
         
-        # retrieve index entries
-        exs, cls = hermes.common.index_get_tasks( self.__task_idx )
+        # retrieve index entries ( executing, closed, dict of aliases )
+        eid, _, als = hermes.common.index_get_tasks( self.__task_idx )
         
-        #       default is w, i.e. write a new file
-        init_mode = 'w' 
+        # check if current alias is used in another active task
+        if alias in [ als[key] for key in eid ]:
+            print('WAR: alias already used by another task')
         
-        # manage conflict in index value
-        if name in cls:
-            # this name already exists as a closed task
-            ee['status'] = 'recreated'
-            index_touch( self.__task_idx, name, ee)
-            
-        elif name in exs:
-            # this name already exists as a running task
-            ee['status'] = 'appended'
-            init_mode = 'a'
-            index_touch( self.__task_idx, name, ee)
-            
-        else:
-            # append new task to index
-            index_add( self.__task_idx, ee)
+        # append new task to index
+        index_add( self.__task_idx, ee)
         
         # creation in private log
-        with open(self.__task_log, mode=init_mode) as tlog:
+        with open(self.__task_log, mode='w') as tlog:
             tlog.write(entry_head() + "created\n")
         
     
@@ -179,4 +167,4 @@ class tasklogger():
     
     # update entry of an index file
     def index_update(self, new_values : dict) -> None:
-        index_touch( self.__task_idx, self.name, new_values)
+        index_touch( self.__task_idx, self.id, new_values)

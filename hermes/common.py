@@ -18,7 +18,7 @@ namespace = { 'SETTINGS_FILE'  : 'settings.ini',
               'TASK_PRIVATE'   : 'task_{}.log',
               
               'TINDEX_HEAD'    : "Hermes Task - index file [{}]\n",
-              'TINDEX_FIELDS'  : "name,pid,spawntime,status"
+              'TINDEX_FIELDS'  : "id,alias,pid,spawntime,status"
             }
 
 
@@ -110,13 +110,21 @@ def index_access(ipath, ifile, time = '', autocreate = True) -> None:
 
 
 def index_get_tasks(ifile : str):
+    #  Arg:  ifile  name of auth file
+    #
+    #  Output:    - list of alive tasks (id)
+    #             - list of closed tasks (id) (includes failed tasks)
+    #             - dictionary with (key:id, alias)
     alive_tasks = [];
     closed_tasks = [];
+    alias_tasks = {};
+    
     with open(ifile, mode='r') as tindex:
         next(tindex) # skip header
         rtasks = csv.DictReader(tindex)
         for task in rtasks:
-            if(task['status'] not in ['failed','closed']): closed_tasks.append( task['name'] )
-            else: alive_tasks.append( task['name'] )
+            if(task['status'] in ['failed','closed']): closed_tasks.append( task['id'] )
+            else:                                      alive_tasks.append( task['id'] )
+            alias_tasks[ str(task['id']) ] = str(task['alias'])
             
-    return alive_tasks, closed_tasks
+    return alive_tasks, closed_tasks, alias_tasks

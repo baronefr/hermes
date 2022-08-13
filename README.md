@@ -17,4 +17,9 @@ From this directory, run
 pip install -e .
 ```
 
+
+Add to .bashrc
+```
+export HERMES_ENV_SETTINGS=/home/baronefr/.../settings.ini
+```
 TODO

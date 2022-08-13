@@ -13,25 +13,53 @@ class std:
     icon = "🖥️"
     
     hello = "Hello there!"
-    bonjour = icon + " {} is online"  # .format with hostname
+    bonjour = icon + " *{}* is online"    # .format with hostname
     
-    unauthorized = "You are not authorized!"
-    unknown = "Unknown command!"
+    unauthorized = "⛔️ you are not authorized"
+    unknown = "unknown command"
     toc = "I'm alive, thx"
     
-    help = 'Hello Kenobi!'
+    help = "📢 Hello Kenobi!"
     
     about = " HERMES - ver 1.0 "
-      
     
+    unhandled_query = "unhandled query"
+    unhandled_event = "unhandled event"
+    
+    accepted_event = "{} event {} accepted"  # arg: icon, event_name
+    
+class task:
+    
+    # header of the task index query
+    markup_header = " TASKS ---------\n"
+    
+    # errors in query
+    index_not_available = "⚠️ index file not available"
+    index_empty = "⚠️ index is empty"
+    task_query_error = "⭕️ task query error"
+    
+    # markup symbols
+    head_active = '   *active*'
+    markup_active = '▫️'
+    head_closed = '\n   *closed*'
+    markup_closed = '▪️'
+    
+    # errors in handler
+    task_file_error = "⚠️ task file does not exist"
+    task_event_error = "⭕️ task event error"
+    
+    # the task log
+    task_message = "*TASK <{}>*  log\n--------\n{}\n--eof---"
+
+
 class power:
     icon = "🔋"
     
     markup_title = icon + ' power options'
     
-    action_poweroff = "🔻 poweroff"
-    action_reboot = "🔻 reboot"
-    action_status = "🔻 status"
+    action_poweroff = "🛑 poweroff"
+    action_reboot = "🔆 reboot"
+    action_status = "〽️ status"
 
 
 class openrgb:
