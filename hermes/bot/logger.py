@@ -8,30 +8,26 @@
 #  This class is the BOT logger.
 #   DO NOT EDIT!
 
-import os.path
+import os
 from datetime import datetime
+import stat
 
-
-
-# default log file path (can be overridden by init arg)
-LOG_PATH_DEFAULT = "./log"
-
-
+from hermes.common import *
 
 ###############
 #  LOG files  #
 ###############
 
-# log files placeholders
-UNAUTH_LOG = "unauth.log"       # log of all unauthorized users
-AUTH_USER_LOG = "user_{}.log"   # a log for each authorized user
-REGISTER_LOG = "register.log"   # a log for users which require registration
+# log files placeholders (DO NOT CHANGE...)
+UNAUTH_LOG = hermes.common.namespace['BLOG_UNAUTH']       # log of all unauthorized users
+AUTH_USER_LOG = hermes.common.namespace['BLOG_AUTH_USER'] # a log for each authorized user
+REGISTER_PIPE = hermes.common.namespace['BLOG_REGISTER']   # a log for users which require registration
 
 # log file headers
-log_header = "Hermes Telegram bot - log file [{}]\n init: {}\n============================\n\n"
+BOT_LOG_HEADER = hermes.common.namespace['BLOG_HEAD']
 
 # timestamp to use in log files
-TIME_FORMAT = "%Y/%m/%d %H:%M:%S"
+TIME_FORMAT = hermes.common.namespace['LOG_TIMESTAMP']
 
 # header of the message to be logged
 #    default:     [current time] ...
@@ -49,18 +45,17 @@ def entry_head():
 #
 class botlogger():
     
-    def __init__(self, path = None, autocreate = True) -> None:
+    def __init__(self, path, autocreate = True) -> None:
     
         now = datetime.now()
     
-        if path is None: self.path = LOG_PATH_DEFAULT
-        else: self.path = path
+        self.path = path
         
         if autocreate:
             # create the log files, if they don't exist       
             if not os.path.exists(self.path + UNAUTH_LOG):
                 with open(self.path + UNAUTH_LOG, 'w') as f:
-                    f.write( log_header.format('unauthorized users', now.strftime(TIME_FORMAT)) )
+                    f.write( BOT_LOG_HEADER.format('unauthorized users', now.strftime(TIME_FORMAT)) )
             
             # ...
             # TODO  create ALL log files
@@ -85,8 +80,19 @@ class botlogger():
         with open(this_file, "a") as this_log:
             this_log.write(entry_head() + text + "\n")
     
-    # add the user id to the register queue to gain access
-    def register(self, chatid) -> None:
-        this_file = self.path + REGISTER_LOG
-        with open(this_file, "a") as this_log:
-            this_log.write(entry_head() + str(chatid) + "\n")
+    
+    ##################
+    # register funct #
+    ##################
+    
+    # check if register is available
+    #  Returns:    None  if it is not available
+    #              str   (path to register) if available
+    def check_register(self):
+        this_pipe = self.path + REGISTER_PIPE
+        
+        # check if register is available
+        #if stat.S_ISFIFO(os.stat(this_pipe).st_mode):
+        if os.path.exists(this_pipe):
+              return this_pipe
+        else: return None

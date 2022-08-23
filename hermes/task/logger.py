@@ -37,7 +37,7 @@ TASK_IDX = hermes.common.namespace['TASK_INDEX']     # index of all tasks
 TASK_LOG = hermes.common.namespace['TASK_PRIVATE']   # private log file for each task
 
 # timestamp to use in task log files
-TIME_FORMAT = "%Y/%m/%d %H:%M:%S"
+TIME_FORMAT = hermes.common.namespace['LOG_TIMESTAMP']
 
 # header of the message to be logged
 #    default:     [current time] ...

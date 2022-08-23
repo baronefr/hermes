@@ -5,7 +5,7 @@
 #--------------------------------------------------------
 
 import telebot
-import os
+from datetime import datetime
 
 # messages
 from hermes.bot.linguist import std as mstd
@@ -48,6 +48,8 @@ class handlers():
         self.unknown_command_ignore = root.unknown_command_ignore
         self.task_path = root.task_path
 
+
+
     ################
     #   security   #
     ################
@@ -72,7 +74,42 @@ class handlers():
             
         return wrapper
     
-  
+    
+    
+    # register the user
+    # DO NOT DECORATE WITH ifauthorized, need a special handle for this!
+    def register(self, message):
+        action, chatid = unpack_msg(message)
+        
+        if chatid in self.auth_users.values():
+            # -> user is already authorized
+            self.log.auth( action, chatid )
+            #self.bot.reply_to(message, mstd.authorized )
+            #return 0                                  TODO: ehm... revert! DEBUG 
+        else:
+            # -> if not authorized
+            self.log.unauth( action, chatid )
+            if not self.unauthorized_ghosting:
+                self.bot.reply_to(message, mstd.unauthorized)
+        
+        try:
+            # check if register is available
+            #  -> this method returns a string with complete path
+            check = self.log.check_register()
+            if check is None:
+                #print('[register] register is not open!')
+                return 0
+            
+            # write to register
+            with open(check, "a") as regist:
+                regist.write( "{},{}\n".format(chatid, datetime.now().strftime("%Y/%m/%d_%H:%M:%S") ) )
+            
+            print('[register] completed')
+            self.log.unauth('register completed', chatid)
+            
+        except Exception as err:
+            print('[register] error:', err)
+            
     
     ################
     #   commands   #
@@ -81,7 +118,7 @@ class handlers():
     # help command
     @ifauthorized
     def help(self, message):
-        self.bot.reply_to(message, mstd.hello)
+        self.bot.reply_to(message, mstd.help)
     
     # just a toctoc
     @ifauthorized
@@ -91,11 +128,8 @@ class handlers():
     # about the author
     @ifauthorized
     def about(self, message):
-        self.bot.reply_to(message, mstd.about)
-    
-    # register the user
-    def register(self, message):  # TODO
-        self.log.register( chatid )
+        aboutme = """*HERMES* - Telegram Bot for system control and live code notifications.\nby Francesco Barone\nref: github.com/baronefr/hermes"""
+        self.bot.reply_to(message, aboutme)
     
     # handle the ELSE case, when no other command is matched
     @ifauthorized

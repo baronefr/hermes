@@ -12,16 +12,27 @@
 class std:
     icon = "🖥️"
     
-    hello = "Hello there!"
+    #hello = "Hello there!"
+    # bonjour message
     bonjour = icon + " *{}* is online"    # .format with hostname
     
     unauthorized = "⛔️ you are not authorized"
+    authorized = "already authorized"
     unknown = "unknown command"
     toc = "I'm alive, thx"
     
-    help = "📢 Hello Kenobi!"
     
-    about = " HERMES - ver 1.0 "
+    # help message, update with your commands
+    help = """📢 Hello General Kenobi!\n
+              /toctoc    bot check
+              /about     dev credits
+              
+              /register  register new user
+              
+              /power     power management
+              /tasks     Hermes Task
+              /sentinel  process monitor
+              /rgb       RGB system control"""
     
     unhandled_query = "unhandled query"
     unhandled_event = "unhandled event"

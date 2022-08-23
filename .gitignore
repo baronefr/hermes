@@ -4,10 +4,7 @@ hermes.egg-info/
 **/.ipynb_checkpoints/
 
 # private
-settings.ini
-auth.txt
 
-# other
-log/
+# examples images
 examples/*.png
 examples/*.jpg

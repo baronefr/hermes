@@ -12,11 +12,27 @@ import hermes
 
 #  DEFAULT NAMESPACE -----------------------------------------------
 #
-namespace = { 'SETTINGS_FILE'  : 'settings.ini', 
+#   My advice is to not change these options...
+#
+namespace = { # configuration files
+              'SETTINGS_FILE'  : 'settings.ini',
               'AUTH_FILE'      : 'auth.txt',
+              'LOG_DIR'        : 'log/',
+              
+              # bot log files
+              'BLOG_UNAUTH'    : "unauth.log",       # log of all unauthorized users
+              'BLOG_AUTH_USER' : "user_{}.log",      # a log for each authorized user
+              'BLOG_REGISTER'  : "register.tmp",     # a register for user which ask for access
+              
+              # bot etc
+              'BLOG_HEAD'      : "Hermes Telegram bot - log file [{}]\n init: {}\n============================\n\n",
+              'LOG_TIMESTAMP'  : "%Y/%m/%d %H:%M:%S",
+              
+              # task files
               'TASK_INDEX'     : 'tasks.list',
               'TASK_PRIVATE'   : 'task_{}.log',
               
+              # task etc
               'TINDEX_HEAD'    : "Hermes Task - index file [{}]\n",
               'TINDEX_FIELDS'  : "id,alias,pid,spawntime,status"
             }

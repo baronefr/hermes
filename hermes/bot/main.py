@@ -7,7 +7,7 @@
 #--------------------------------------------------------
 
 #  This file is the bot object implementation. Here you can:
-#   - add new commands to the bot
+#   - add new commands to the bot (but implement in another file, please...)
 
 import telebot
 
@@ -23,6 +23,12 @@ from hermes.bot.handlers import handlers
 from hermes.bot.linguist import std as mstd
 
 
+LOGDIR = hermes.common.namespace['LOG_DIR']   
+
+
+# ------------------------------------------------------------------
+#  Bot object ------------------------------------------------------
+#
 class bot():
     
     def __init__(self, settings = None) -> None:
@@ -41,9 +47,6 @@ class bot():
             # general settings
             self.hostname = str( config['general']['hostname'] )
             MYTOKEN = str( config['general']['token'] )
-            
-            # bot
-            LOGDIR = str( config['bot']['log_dir'] )
             
             # bot > privacy settings
             self.unauthorized_ghosting = config.getboolean('bot','unauthorized_ghosting')

@@ -10,10 +10,10 @@
 
 
 class std:
-    init = "✨ Task {} has spawned"
+    init = "👌🏻 Task {} has spawned"
     
-    waypoint = "[{}]\n waypoint #{}"
+    waypoint = "🚀 [{}]\n waypoint #{}"
     
-    failed = " Task {} has failed"
+    failed = "📛 Task {} has failed"
     failed_msg = failed + "\n err: [{}]"
-    closed = " Task {} has been closed"
+    closed = "♨️ Task {} has been closed"
