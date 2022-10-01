@@ -1,28 +1,29 @@
-import setuptools
+from setuptools import setup, find_packages
 
 #########################################################
 #   HERMES - telegram bot for system control & notify
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 26 july 2022
+#  coder: Barone Francesco, last edit: 1 oct 2022
 #--------------------------------------------------------
 
-description="Telegram bot for control and notifications."
+description="Telegram Bot for system control and runtime notifications"
 
-setuptools.setup(
+setup(
     name="hermes",
-    version="0.5",
-    author="Barone F.P.",
+    version="0.7",
     description=description,
-    url="github.com/baronefr/",
-    packages=setuptools.find_packages(),
-    install_requires=['pyTelegramBotAPI'],
+    url="github.com/baronefr/hermes",
+    author="Francesco Barone",
+    author_email="@gmail.com",
+    license="Open Access",
     python_requires='>=3',
-    license='Open Access',
+    packages=find_packages(),
+    install_requires=["pyTelegramBotAPI"],
+    zip_safe=False,
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Scientists",
-        "Topic :: Physics :: Dynamical systems",
         "Programming Language :: Python :: 3",
-        "Operating System :: OS Independent",
+        "Operating System :: Linux",
     ],
 )
