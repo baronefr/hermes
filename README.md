@@ -57,15 +57,15 @@ python3 -c "import hermes; hermes.setup();"
 ```
 
 
-6) Append to your bashrc the environment variable
+6) Append to your bashrc the environment variable (if you are NOT root user)
 ```bash
 cd
 cp .bashrc .bashrc.bak
-echo "/home/$USER/.local/hermes/" >> .bashrc
+echo -e "# hermes env\nexport HERMES_ENV_SETTINGS=\"/home/$USER/.local/hermes/settings.ini\"" >> .bashrc
 source .bashrc
 ```
 
-7) Test the bot with a dry run
+7) Test the bot with a dry run (if you are NOT root user)
 ```bash
 /opt/hermes/bin/start-bot.py --dry-run
 ```

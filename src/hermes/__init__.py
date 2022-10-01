@@ -16,7 +16,7 @@ import hermes
 from hermes.bot  import bot
 from hermes.task import task
 
-from hermes.install import setup
+from hermes.installer import setup
 
 
 ###################

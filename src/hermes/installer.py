@@ -21,7 +21,6 @@ from hermes.common import *
 setup_file = hermes.common.namespace['SETUP_FILE']
 settings_file = hermes.common.namespace['SETTINGS_FILE']
 auth_file = hermes.common.namespace['AUTH_FILE']
-log_dir = hermes.common.namespace['LOG_DIR']
 
 
 ##  TEMPLATES ---------------------------------------------
@@ -47,12 +46,9 @@ task_path=/tmp/hermes/
 default_user=0
 """
 
-auth_template = "chatid,name,bonjour,active"
+auth_template = "chatid,name,bonjour,active\n"
 
 
-
-
-##  EXE ---------------------------------------------------
 
 
 # create a new blank setup file, to be edited by the user
@@ -83,15 +79,20 @@ def new_setup(prefix = '') -> None:
 
 
 
+##  EXE ---------------------------------------------------
 
 # setup routine:
 #  - take as input a setup.hermes file
 #  - create the settings root
 def setup(path = None) -> None:
 
-    global setup_file
+    global setup_file, settings_file, auth_file
     
     print(" >> Welcome to Hermes setup wizard\n")
+    
+    
+    
+    ##  0)  sorting out things!
     
     # if path is not prompted, use current working dir
     if path is None:
@@ -104,8 +105,6 @@ def setup(path = None) -> None:
     if(PREFIX[-1] != '/'):  PREFIX = PREFIX + '/'
     print('prefix :', PREFIX)
     
-    # TODO check if dir is empty
-    
     
     # check if setup file exists (create template if does not exist)
     if not os.path.exists(PREFIX + setup_file):
@@ -113,6 +112,13 @@ def setup(path = None) -> None:
         print("   >>  {}".format(PREFIX + setup_file) )
         new_setup()
         sys.exit(1)
+    
+    # check if dir is empty (I suggest it to be empty!)
+    if len(os.listdir(PREFIX) ) > 1:
+        print("\n [ war ] target directory is NOT empty.\n Continue anyway?", end='')
+        ans = input(" [Yy] > ") 
+        if ans.lower() != "y": sys.exit(0) 
+
     
     
     ##  1)  setup file
@@ -135,10 +141,17 @@ def setup(path = None) -> None:
         sys.exit(1)
     
     
+    ##  2)  checking args
     
-    ##  2)  check args
-    do_auth = False
+    if 'userid' not in this_settings.keys():    # assign username as default
+        this_settings['userid'] = getpass.getuser()
     
+    if 'hostname' not in this_settings.keys():  # assign system hostname as default
+        this_settings['hostname'] = socket.gethostname()
+    
+    if 'token' not in this_settings.keys():
+        print(" [ err ] no token provided!")
+        sys.exit(1)
     
     
     ##  3)  writing settings
@@ -159,11 +172,24 @@ def setup(path = None) -> None:
     try:
         f = open( PREFIX + auth_file, "w")
         f.write( auth_template )
-        f.write(  )
+        if 'chatid' in this_settings.keys():
+            user_str = this_settings['chatid'] + ',' + this_settings['userid'] + ',true,true'
+            f.write( user_str )
+        else:
+            print(' [ info ] no authorized user, you can manually add them to', auth_file)
         f.close()
+        
     except Exception as e:
         print(" [ err ] cannot write {} file".format(auth_file) )
         print(e)
         f.close()
+        
+    
     
     print("done!")
+    
+    
+
+if __name__ == "__main__":
+    print("Don't run this, fool of a Took!\n Look at README instead!")
+    sys.exit(1)
