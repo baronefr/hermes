@@ -15,9 +15,10 @@ import hermes
 #   My advice is to not change these options...
 #
 namespace = { # configuration files
+              'SETUP_FILE'     : 'setup.hermes',
               'SETTINGS_FILE'  : 'settings.ini',
               'AUTH_FILE'      : 'auth.txt',
-              'LOG_DIR'        : 'log/',
+              'LOG_DIR'        : 'log/',  # dev: do not change this... there might be unmanaged references
               
               # bot log files
               'BLOG_UNAUTH'    : "unauth.log",       # log of all unauthorized users

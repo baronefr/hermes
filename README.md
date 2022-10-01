@@ -12,23 +12,13 @@ Ver 0.7, 01 October 2022
 eheh... make pictures! TODO
 
 
-
-
-## How to install (wizard)
-
-I will assume that you **already have a Telegram bot and its authorization token**. It is better to know also your **chatid**, as it will be requested by the wizard. Anyway, it is possible to add new users later, with a registration procedure or manually.
-
-If you wish to perform a **full manual installation**, take a look at [this](./manual-install.md) readme file.
-
+## Setup (wizard)
 
 1) Clone this repo in `/opt/hermes` (my suggested installation path).
 ```bash
-cd /opt/
-sudo git clone https://github.com/baronefr/hermes.git --depth=1
-cd hermes
-chmod +x bin/*
+sudo git clone https://github.com/baronefr/hermes.git /opt/hermes
+chmod +x /opt/hermes/bin/*
 ```
-
 
 2) Install the Hermes Python library.
 ```bash
@@ -36,60 +26,76 @@ pip3 install -e /opt/hermes/src/
 ```
 
 
-3) Create your configuration files (path, telegram bot token). The following script will guide you through the necessary steps:
+3) Create your **Hermes private directory**. Hermes requires a directory to store logs and user private settings (Telegram token, chatid). I suggest to use `~/.local/hermes/`.
 ```bash
-bin/make-config.sh
+mkdir -p /home/$USER/.local/hermes/ && cd "$_"
 ```
-The requested inputs are
-- `Hermes hostname` \[string\] - basically, the name of your host machine
-- `Telegram bot token` - something that looks like `0123456789:abcdefghijklmnopqrstuvwxy_ABCDEFGHI`
-- `chatid` \[number\] (optional) - if you don't know it, there are other bots that will echo your chat id (like `@chatid_echo_bot`)
-    - userid \[string\] - a string associated to your chatid, for friendly reference (if a chatid is prompted)
 
-By default, the configuration files are placed in `/home/YOUR_USERNAME/.local/hermes/`. *Remark*: the script will also append a new line to your .bashrc file. Don't worry, it also creates a backup copy of it... :)
 
-If the process is successful, check that the environment variable exists:
+4) Create a `setup.hermes` file
 ```bash
-source bin/reload-env.sh
-echo "$HERMES_ENV_SETTINGS"
+touch setup.hermes
 ```
-Anyway, also opening a new bash shell will make the trick (recall to cd again into `/opt/hermes`).
+and edit it, providing the following values:
+- `hostname` \[string\] - basically, the name of your host machine
+- `token` \[string\] - the Telegram bot token
+- `chatid` \[number\] - ID associated to your Telegram account. If you don't know it yet, there are other bots that will echo your chat id (like @chatid\_echo\_bot).
+- `userid` \[string\] - a string associated to your chatid, for friendly reference
 
-
-4) Execute the bot to make sure that everything is configured properly.
+As an example, the file should look like this:
+```python
+hostname=mars
+token=0123456789:abcdefghijklmnopqrstuvwxy_ABCDEFGHI
+chatid=1234567890
+userid=baronefr
 ```
-bin/start-bot.py --dry-run
+
+
+5) Let the bot create the definitive configuration files
+```bash
+python3 -c "import hermes; hermes.setup();"
 ```
-In case of errors in the bot initialization, use the error messages to spot the error among the previous steps.
+
+
+6) Append to your bashrc the environment variable
+```bash
+cd
+cp .bashrc .bashrc.bak
+echo "/home/$USER/.local/hermes/" >> .bashrc
+source .bashrc
+```
+
+7) Test the bot with a dry run
+```bash
+/opt/hermes/bin/start-bot.py --dry-run
+```
 
 
 
 
+## Execute the bot
 
-### How to install (full manual)
+By default, the bot is not running in background. You can execute it through this script, leaving the terminal active as long as you wish.
+```bash
+/opt/hermes/bin/start-bot.py
+```
+However, I find far more useful to setup the bot as a service which executes at boot!
 
-Read [this](./manual-install.md).
 
-
-
-## Make the bot execute at startup
+### Make the bot autorun at boot
 
 We need to setup a systemd service to make the bot execute at boot before the user login. The following wizard will guide you
 
+```bash
+/opt/hermes/bin/make-service.sh
 ```
-bin/make-service.sh
-```
-
-
-
 
 
 
 
 ## Add a new user with wizard
 
-extra) Add yourself as authorized user.
-```
+```bash
 bin/register.sh
 ```
 

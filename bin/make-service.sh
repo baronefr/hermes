@@ -15,6 +15,7 @@ echo -e " >> Welcome to Hermes service wizard\n"
 # retrieve username
 echo "Your username is <$USER>"
 
+echo $(pwd)
 
 # retrieve Hermes configuration path
 if [[ -z "${HERMES_ENV_SETTINGS}" ]]; then
@@ -29,7 +30,7 @@ TARGET="/etc/systemd/system/hermes.service"
 echo "Target systemd service location is <$TARGET>"
 
 # check if files exist (you must be in correct pwd)
-TEMPLATE="./templates/hermes.service"
+TEMPLATE="./lib/hermes.service"
 if [ -f "$TEMPLATE" ]; then
     echo ""
 else 
