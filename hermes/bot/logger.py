@@ -48,17 +48,18 @@ class botlogger():
     def __init__(self, path, autocreate = True) -> None:
     
         now = datetime.now()
-    
         self.path = path
         
+        # check path existence
+        if not os.path.exists(self.path):
+            if autocreate:   os.mkdir(self.path)
+            else:   raise Exception("log dir does not exist, autocreate is disabled")
+        
+        # create unauth log file
         if autocreate:
-            # create the log files, if they don't exist       
             if not os.path.exists(self.path + UNAUTH_LOG):
                 with open(self.path + UNAUTH_LOG, 'w') as f:
                     f.write( BOT_LOG_HEADER.format('unauthorized users', now.strftime(TIME_FORMAT)) )
-            
-            # ...
-            # TODO  create ALL log files
         
         # TODO  test if log files are writable
     
@@ -93,6 +94,5 @@ class botlogger():
         
         # check if register is available
         #if stat.S_ISFIFO(os.stat(this_pipe).st_mode):
-        if os.path.exists(this_pipe):
-              return this_pipe
+        if os.path.exists(this_pipe): return this_pipe
         else: return None

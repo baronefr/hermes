@@ -1,10 +1,12 @@
 [Unit]
-Description=Hermes server
+Description=Hermes host
 After=network-online.target
 
 [Service]
-User=baronefr
 Type=simple
+User=USERPLACEHOLDER
+Group=USERPLACEHOLDER
+Environment=ENVPLACEHOLDER
 ExecStart=/usr/bin/python3 /opt/hermes/bin/start-bot.py
 StandardInput=tty-force
 

@@ -26,7 +26,7 @@ cd hermes
 chmod +x ./bin/*
 ```
 
-2) Install the Python library.
+2) Install the Hermes Python library.
 ```
 pip3 install -e /opt/hermes/
 ```

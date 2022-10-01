@@ -1,11 +1,11 @@
 #########################################################
 #   HERMES - telegram bot for system control & notify
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 26 july 2022
+#  coder: Barone Francesco, last edit: 1 Oct 2022
 #--------------------------------------------------------
 
 __version__ = '0.1.0'
-__major_review__ = '12 Aug 2022'
+__major_review__ = '1 Oct 2022'
 
 
 # system modules
