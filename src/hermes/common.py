@@ -52,7 +52,9 @@ def settings_default_policy():
     settings = os.environ.get(hermes.env_key)
     
     # [2] local path
-    if settings is None: settings = './' + namespace['SETTINGS_FILE']
+    if settings is None: 
+        settings = './' + namespace['SETTINGS_FILE']
+        print('Warning: no env variable detected')
     return settings
 
 
