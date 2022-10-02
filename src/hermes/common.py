@@ -19,6 +19,7 @@ namespace = { # configuration files
               'SETTINGS_FILE'  : 'settings.ini',
               'AUTH_FILE'      : 'auth.txt',
               'LOG_DIR'        : 'log/',  # dev: do not change this... there might be unmanaged references
+              'EXTERNAL_EXE'   : 'external.py',
               
               # bot log files
               'BLOG_UNAUTH'    : "unauth.log",       # log of all unauthorized users
@@ -44,19 +45,19 @@ namespace = { # configuration files
 #  Each module (bot & task) has an optional argument 'settings'
 #  of the init function, which overrides the following policy.
 #  In priority order, the default policy hereby implemented is:
-#    0) (override)
+#    0) (override, managed by the calling function)
 #    1) environment variable
 #    2) current path of the executable
 #
 def settings_default_policy():
     # [1] environment variable
-    settings = os.environ.get(hermes.env_key)
+    prefix = os.environ.get( hermes.env_key )
     
     # [2] local path
-    if settings is None: 
-        settings = './' + namespace['SETTINGS_FILE']
-        print('Warning: no env variable detected')
-    return settings
+    if prefix is None: 
+        prefix = './'
+        print('[ warning ] no env variable detected, using pwd')
+    return prefix
 
 
 

@@ -12,27 +12,31 @@ Ver 0.7, 01 October 2022
 eheh... make pictures! TODO
 
 
+
+
+
+
 ## Setup (wizard)
 
-1) Clone this repo in `/opt/hermes` (my suggested installation path).
+**1)** Clone this repo in `/opt/hermes` (my suggested installation path).
 ```bash
 sudo git clone https://github.com/baronefr/hermes.git /opt/hermes
 chmod +x /opt/hermes/bin/*
 ```
 
-2) Install the Hermes Python library.
+**2)** Install the Hermes Python library.
 ```bash
 pip3 install -e /opt/hermes/src/
 ```
 
 
-3) Create your **Hermes private directory**. Hermes requires a directory to store logs and user private settings (Telegram token, chatid). I suggest to use `~/.local/hermes/`.
+**3)** Create your **Hermes private directory**. Hermes requires a directory to store logs and user credentials (Telegram token, chatid table). I suggest to use `~/.local/hermes/`.
 ```bash
 mkdir -p /home/$USER/.local/hermes/ && cd "$_"
 ```
 
 
-4) Create a `setup.hermes` file
+**4)** In the private directory, you shall create a `setup.hermes` file
 ```bash
 touch setup.hermes
 ```
@@ -44,28 +48,32 @@ and edit it, providing the following values:
 
 As an example, the file should look like this:
 ```python
-hostname=mars
+hostname=mercury
 token=0123456789:abcdefghijklmnopqrstuvwxy_ABCDEFGHI
 chatid=1234567890
 userid=baronefr
 ```
 
 
-5) Let the bot create the definitive configuration files
+**5)** Let the bot create the definitive configuration files
 ```bash
 python3 -c "import hermes; hermes.setup();"
 ```
 
 
-6) Append to your bashrc the environment variable (if you are NOT root user)
+Continue with the following steps only if you are **NOT root user**.
+
+
+**I)** Append to bashrc the environment variable pointing to the private directory
 ```bash
 cd
 cp .bashrc .bashrc.bak
-echo -e "# hermes env\nexport HERMES_ENV_SETTINGS=\"/home/$USER/.local/hermes/settings.ini\"" >> .bashrc
+echo -e "# hermes env\nexport HERMES_ENV_SETTINGS=\"/home/$USER/.local/hermes/\"" >> .bashrc
 source .bashrc
 ```
 
-7) Test the bot with a dry run (if you are NOT root user)
+
+**II)** Test the bot with a dry run
 ```bash
 /opt/hermes/bin/start-bot.py --dry-run
 ```

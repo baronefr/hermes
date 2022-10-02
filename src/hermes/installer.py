@@ -21,7 +21,7 @@ from hermes.common import *
 setup_file = hermes.common.namespace['SETUP_FILE']
 settings_file = hermes.common.namespace['SETTINGS_FILE']
 auth_file = hermes.common.namespace['AUTH_FILE']
-
+ext_file = hermes.common.namespace['EXTERNAL_EXE']
 
 ##  TEMPLATES ---------------------------------------------
 
@@ -44,12 +44,74 @@ unknown_command_ignore=true
 [task]
 task_path=/tmp/hermes/
 default_user=0
+
+[external]
+oneshot=netstat
+query=None
 """
 
 auth_template = "chatid,name,bonjour,active\n"
 
 
+external_template = """
+#########################################################
+#   HERMES - telegram bot for system control & notify
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#  coder: Barone Francesco, last edit: 02 Oct 2022
+#--------------------------------------------------------
 
+
+#   -->  EXTERNAL FUNCTIONS -------------------------------
+#  This file allows you to easily create custom commands for the bot, which perform some
+#  actions on the systems and return a callback string. We distinguish between:
+#   - oneshot commands: send a message to the bot and get an answer
+#   - query: send a message, get a reply menu with many options & pick one
+#
+#  Eventually you have to activate these functions in your settings.ini:
+#  ........................
+#  [external]
+#  oneshot=bonjour,netstat
+#  query=rgb
+#  ........................
+#
+
+
+import urllib.request
+import subprocess
+
+
+##   ONESHOT ----------------------------------------------
+
+#  remark: A special oneshot message is bonjour, which follows
+#          the default bonjur message.
+def bonjour() -> str:
+    \"\"\"bonjour message\"\"\"  # <- docstrings are used to compose the help menu
+    return "Something you want to say after bonjour?"
+
+#  this is an example of oneshot command, which sends network informations
+def netstat() -> str:
+    \"\"\"network status\"\"\"
+    
+    try:
+        external_ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
+        interface = subprocess.Popen("iwgetid", cwd="/", stdout=subprocess.PIPE).stdout.read().decode()
+        hostIP = subprocess.Popen(["hostname","-I"], cwd="/", stdout=subprocess.PIPE).stdout.read().decode()
+        message = \"\"\"\[extIP] {}\n\[route] {}\n\[interface] {}\"\"\".format(external_ip, hostIP.rstrip(), interface.rstrip())
+    except Exception as err:
+        message = f"netstat error: {err}"
+        print(' [err] netstat', err)
+    return message
+
+
+
+##   QUERY ------------------------------------------------
+
+# To see a custom query implementation, look at lib/external.py
+"""
+
+
+
+##  lib ---------------------------------------------------
 
 # create a new blank setup file, to be edited by the user
 def new_setup(prefix = '') -> None:
@@ -83,12 +145,13 @@ def new_setup(prefix = '') -> None:
 
 # setup routine:
 #  - take as input a setup.hermes file
-#  - create the settings root
+#  - create the configuration root directory
 def setup(path = None) -> None:
 
     global setup_file, settings_file, auth_file
     
     print(" >> Welcome to Hermes setup wizard\n")
+    
     
     
     
@@ -184,7 +247,17 @@ def setup(path = None) -> None:
         print(e)
         f.close()
         
-    
+    # creating external
+    print('create', ext_file)
+    try:
+        f = open( PREFIX + ext_file, "w")
+        f.write( external_template )
+        f.close()
+        
+    except Exception as e:
+        print(" [ err ] cannot write {} file".format(ext_file) )
+        print(e)
+        f.close()
     
     print("done!")
     

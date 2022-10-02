@@ -24,21 +24,22 @@ class std:
     
     # help message, update with your commands
     help = """📢 Hello General Kenobi!\n
-              /toctoc    bot check
-              /about     dev credits
+    /toctoc    bot check
+    /about     dev credits
+    /register  register new user
               
-              /register  register new user
-              
-              /power     power management
-              /tasks     Hermes Task
-              /sentinel  process monitor
-              /rgb       RGB system control"""
+    /power     power management
+    /tasks     Hermes Task
+    /sentinel  process monitor"""
+    
+    help_external = "/{} - {}\n"
     
     unhandled_query = "unhandled query"
     unhandled_event = "unhandled event"
     
     accepted_event = "{} event {} accepted"  # arg: icon, event_name
-    
+
+
 class task:
     
     # header of the task index query
@@ -71,16 +72,3 @@ class power:
     action_poweroff = "🛑 poweroff"
     action_reboot = "🔆 reboot"
     action_status = "〽️ status"
-
-
-class openrgb:
-    icon = "💡"
-    
-    markup_title = icon + ' rgb options'
-    
-    rgb_yell  = "🟡 yellow"
-    rgb_dyell = "🟡 yellow dark"
-    rgb_red   = "🔴 red"
-    rgb_green = "🟢 green"
-    rgb_blue  = "🔵 blue"
-    rgb_off   = "⚫ off"

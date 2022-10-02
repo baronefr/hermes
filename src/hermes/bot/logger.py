@@ -21,7 +21,7 @@ from hermes.common import *
 # log files placeholders (DO NOT CHANGE...)
 UNAUTH_LOG = hermes.common.namespace['BLOG_UNAUTH']       # log of all unauthorized users
 AUTH_USER_LOG = hermes.common.namespace['BLOG_AUTH_USER'] # a log for each authorized user
-REGISTER_PIPE = hermes.common.namespace['BLOG_REGISTER']   # a log for users which require registration
+REGISTER_PIPE = hermes.common.namespace['BLOG_REGISTER']  # a log for users which require registration
 
 # log file headers
 BOT_LOG_HEADER = hermes.common.namespace['BLOG_HEAD']

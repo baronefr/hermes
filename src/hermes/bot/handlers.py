@@ -11,7 +11,6 @@ from datetime import datetime
 from hermes.bot.linguist import std as mstd
 from hermes.bot.linguist import task as mtsk
 from hermes.bot.linguist import power as mpow
-from hermes.bot.linguist import openrgb as mrgb
 
 # services
 import hermes.bot.fpower as fpower
@@ -31,11 +30,23 @@ def unpack_msg(message):
     
 def markup_fix(msg : str) -> str:
     return msg.replace('[',"\[")
+    
+
+# create help menu for external commands using docstrings
+def make_help_external(eos = None, eqc= None) -> str:
+    etc = ''
+    if eos is not None:
+        for command, pointer in eos.items():
+            etc += str( mstd.help_external.format(command, pointer.__doc__) )
+    if eqc is not None:
+        for command, pointer in eqc.items():
+            etc += str( mstd.help_external.format(command, pointer.__doc__) )
+    return( ("\n ---------\n" + etc) if etc != '' else '')
 
 
 class handlers():
 
-    def __init__(self, root):
+    def __init__(self, root, oneshot = {}, query = {}):
     
         # take what you need from the root bot class
         self.bot = root.bot
@@ -47,6 +58,9 @@ class handlers():
         self.unauthorized_ghosting  = root.unauthorized_ghosting
         self.unknown_command_ignore = root.unknown_command_ignore
         self.task_path = root.task_path
+        
+        # link externals as dictionaries
+        self.eos = oneshot;   self.eqc = query;
 
 
 
@@ -118,7 +132,8 @@ class handlers():
     # help command
     @ifauthorized
     def help(self, message):
-        self.bot.reply_to(message, mstd.help)
+        msg = mstd.help + make_help_external(self.eos, self.eqc)
+        self.bot.reply_to(message, msg)
     
     # just a toctoc
     @ifauthorized
@@ -139,7 +154,7 @@ class handlers():
             self.bot.reply_to(message, mstd.unknown)
     
     
-    
+
     
     ################
     #   queries    #
@@ -222,15 +237,34 @@ class handlers():
         pass
     
     
-    # rgb control   TODO
+    ##############
+    #  external  #
+    ##############
+    
+    # handle external oneshot commands
     @ifauthorized
-    def query_rgb(self, message):
+    def oneshot(self, message):
+        action, _ = unpack_msg(message)
+        self.bot.reply_to(message, self.eos[action[1:]]() )
+    
+    
+    # handle external query commands
+    @ifauthorized
+    def query(self, message):
+        # select the custom class, i.e.   target_class -> class head
+        action, _ = unpack_msg(message)
+        target_class = self.eqc[action[1:]]
+        
+        # create markup menu
         markup = telebot.types.InlineKeyboardMarkup(row_width=1)
-        markup.add(
-            telebot.types.InlineKeyboardButton(text=mrgb.rgb_off, callback_data="RGB_OFF"),
-            telebot.types.InlineKeyboardButton(text=mrgb.rgb_yell, callback_data="RGB_YELLOW"),
-        )
-        self.bot.send_message(message.chat.id, mrgb.markup_title, reply_markup=markup)
+        for label, callback in target_class.menu:
+            markup.add(
+                        telebot.types.InlineKeyboardButton(text = label, 
+                            callback_data = str(target_class.__name__ + '_' + callback) )
+                      )
+        
+        # send message
+        self.bot.send_message(message.chat.id, target_class.msg, reply_markup=markup)
     
     
     ############
@@ -241,12 +275,12 @@ class handlers():
     @ifauthorized
     def handler_events(self, callback):
     
-        #get the query content and chatid
+        # process message query
         query, chatid = unpack_msg(callback)
-        
+        key, action = query.split("_", maxsplit=1)
         
         # POWER MANAGER
-        if   "POWER_" in query:
+        if key == "POWER":
             # check if event is legal
             if query in fpower.events:
                 self.bot.send_message(chatid, mstd.accepted_event.format( mpow.icon, query) , parse_mode='None')
@@ -258,12 +292,13 @@ class handlers():
                 # ... but this one will provide a reply
                 elif query == fpower.events[2]:
                     rep = fpower.status()
-                    self.bot.send_message(chatid, rep)
+                    for msg in rep:
+                        self.bot.send_message(chatid, msg.replace('_', '\_') )
         
         
         
         # HERMES TASK: send the requested file log
-        elif "TASKS_" in query:
+        elif key == "TASKS":
         
             try:
                 # get the task id & target task file name
@@ -290,11 +325,17 @@ class handlers():
         
         
         
-        # TODO
-        elif "SENTINEL_" in query:
+        # HERMES SENTINEL: TODO
+        elif key == "SENTINEL":
             self.bot.send_message(chatid, mstd.unhandled_event)
         
-        # TODO
-        elif "RGB_" in query:
-            self.bot.send_message(chatid, mstd.unhandled_event)
         
+        # manage user-defined query
+        elif key in list(self.eqc.keys()):
+            msg = self.eqc[key].event(action)
+            if msg != '': self.bot.send_message(chatid, msg)
+        
+        else:
+            # ignore wrong key queries
+            pass
+
