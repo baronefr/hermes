@@ -15,8 +15,6 @@ echo -e " >> Welcome to Hermes service wizard\n"
 # retrieve username
 echo "Your username is <$USER>"
 
-echo $(pwd)
-
 # retrieve Hermes configuration path
 if [[ -z "${HERMES_ENV_SETTINGS}" ]]; then
   echo "Hermes ENV variable is not defined! Exit (err)."

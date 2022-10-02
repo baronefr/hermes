@@ -3,7 +3,7 @@
 #########################################################
 #   HERMES - telegram bot for system control & notify
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 12 August 2022
+#  coder: Barone Francesco, last edit: 02 October 2022
 #--------------------------------------------------------
 
 #  This is the Task object implementation.
@@ -68,20 +68,25 @@ class task():
     def __init__(self, settings = None, alias = None, user = 'default',
                  logless = False, allquiet = False) -> None:
         
+        
+        ##    housekeeping  -------------------------------
+        
+        # if argument is not valid, override settings dir with default policy rule
+        if settings is None: PREFIX = hermes.common.settings_default_policy()
+        else:                PREFIX = settings
+        
+        if PREFIX[-1] != '/': PREFIX = PREFIX + '/'   # be sure last char is /
+        
         # manage args
-        # if argument is not valid, override settings file with default policy
-        if settings is None:  settings = hermes.common.settings_default_policy()
         self.__allquiet = bool(allquiet)
                 
-        
         # locate & parse the settings file
         try:
-            SETTINGS_PATH = os.path.dirname(settings)
-            if(SETTINGS_PATH == ''):  SETTINGS_PATH = '.'
+            settings_file = PREFIX + hermes.common.namespace['SETTINGS_FILE']
             
             # read and parse configuration from file
             config = configparser.ConfigParser(interpolation=ExtendedInterpolation())
-            config.read(settings)
+            config.read(settings_file)
         except Exception as err:
             raise Exception('error in settings file IO') from err
 
@@ -120,8 +125,10 @@ class task():
             raise Exception('bot init error') from err
         
         # get the list of available users
-        auth_users, _ = hermes.common.read_permissions(SETTINGS_PATH + '/' + hermes.common.namespace['AUTH_FILE'])
-
+        auth_users, _ = hermes.common.read_permissions(
+           PREFIX + hermes.common.namespace['AUTH_FILE']
+        )
+        
         # user handler
         #  Remark:  self.users will be the lists of users to notify
         if(user == 'default'):  # use the settings file configuration

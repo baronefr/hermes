@@ -4,8 +4,7 @@ hermes.egg-info/
 **/.ipynb_checkpoints/
 
 # development
-tmp/*
-reset.sh
+hidden/*
 
 # examples images
 examples/*.png

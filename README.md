@@ -3,9 +3,10 @@
 
 **Current development status: BETA** - All the main functions are implemented. Need to make debug before release.
 
-Ver 0.7, 01 October 2022
+Ver 0.8, 02 October 2022
 
 
+<br>
 
 ## What can Hermes do?
 
@@ -14,7 +15,7 @@ eheh... make pictures! TODO
 
 
 
-
+<br>
 
 ## Setup (wizard)
 
@@ -79,7 +80,7 @@ source .bashrc
 ```
 
 
-
+<br>
 
 ## Execute the bot
 
@@ -92,24 +93,27 @@ However, I find far more useful to setup the bot as a service which executes at 
 
 ### Make the bot autorun at boot
 
-We need to setup a systemd service to make the bot execute at boot before the user login. The following wizard will guide you
-
+We need to setup a systemd service to make the bot execute at boot before the user login. The following wizard will do it for you.
 ```bash
-/opt/hermes/bin/make-service.sh
+cd /opt/hermes
+bin/make-service.sh
+```
+In case of issues, you can configure systemd by yourself. A template service file is placed in `lib/hermes.service`.
+
+
+### Authorize bot to poweroff/reboot system
+
+Edit the sudoers file to allow the passwordless execution of `/bin/systemctl`. Otherwise, the bot will not be able to manage you system power status.
+```bash
+echo  'echo -e "#hermes priv\n%$USER ALL=NOPASSWD: /bin/systemctl" >> /etc/sudoers' | sudo -s
 ```
 
 
-
+<br>
 
 ## Add a new user with wizard
 
 ```bash
 bin/register.sh
 ```
-
-
-
-
-
-
 

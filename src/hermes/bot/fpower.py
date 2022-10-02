@@ -20,10 +20,10 @@ import psutil, datetime
 events = ['POWER_OFF', 'POWER_REBOOT', 'POWER_STATUS']
 
 def poweroff() -> None:
-    os.system('systemctl poweroff')
+    os.system('sudo systemctl poweroff')
 
 def reboot() -> None:
-    os.system('systemctl reboot -i')
+    os.system('sudo systemctl reboot')
 
 
 def status() -> list:

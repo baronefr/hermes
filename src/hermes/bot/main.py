@@ -7,7 +7,7 @@
 #--------------------------------------------------------
 
 #  This file is the bot object implementation. Here you can:
-#   - add new commands to the bot (but implement in another file, please...)
+#   - add new commands to the bot (the hard way, not recommanded)
 
 import telebot
 

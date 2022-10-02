@@ -73,18 +73,24 @@ class handlers():
         def wrapper(self, message):
             action, chatid = unpack_msg(message)
             
-            ### check for permission ###
+            # check timestamp of message
+            try:
+                in_time = abs(message.date - int(round(datetime.now().timestamp()))) < hermes.common.bot_timeout
+            except Exception as err:
+                in_time = True
             
+            ### check for permission ###
+                      
             # -> user is authorized, execute wrapped function
             if chatid in self.auth_users.values():
-                self.log.auth( action, chatid )
-                function(self, message)
+                self.log.auth( action + ('' if in_time else ' (retard)'), chatid )
+                if in_time: function(self, message)
             
             # -> user is NOT authorized   
             else:
                 self.log.unauth( action, chatid )
                 if not self.unauthorized_ghosting:
-                    self.bot.reply_to(message, mstd.unauthorized)
+                    self.bot.reply_to(message, mstd.unauthorized + ('' if in_time else ' (retard)') )
             
         return wrapper
     
@@ -173,7 +179,6 @@ class handlers():
         )
         #   Remark:  associate here markup text & callback string
         self.bot.send_message(message.chat.id, mpow.markup_title, reply_markup=markup)
-    
     
     
     

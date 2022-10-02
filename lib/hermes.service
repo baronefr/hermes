@@ -1,6 +1,7 @@
 [Unit]
 Description=Hermes host
 After=network-online.target
+#Wants=network-online.target systemd-networkd-wait-online.service
 
 [Service]
 Type=simple
@@ -8,7 +9,8 @@ User=USERPLACEHOLDER
 Group=USERPLACEHOLDER
 Environment=ENVPLACEHOLDER
 ExecStart=/usr/bin/python3 /opt/hermes/bin/start-bot.py
-StandardInput=tty-force
+Restart=on-failure
+RestartSec=120
 
 [Install]
 WantedBy=multi-user.target

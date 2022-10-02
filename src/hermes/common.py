@@ -40,6 +40,9 @@ namespace = { # configuration files
             }
 
 
+bot_timeout = 30   # max age of messages to process [seconds]
+
+
 #  SETTINGS POLICY -------------------------------------------------
 #  
 #  Each module (bot & task) has an optional argument 'settings'
