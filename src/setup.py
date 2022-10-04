@@ -18,7 +18,7 @@ setup(
     license="Open Access",
     python_requires='>=3',
     packages=find_packages(),
-    install_requires=["pyTelegramBotAPI","urllib","subprocess","configparser","inspect","importlib","csv"],
+    install_requires=["pyTelegramBotAPI"],
     zip_safe=False,
     classifiers=[
         "Development Status :: 3 - Alpha",

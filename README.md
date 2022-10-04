@@ -1,5 +1,5 @@
 <h1 align="center">hermes</h1>
-<p align="center">Telegram Bot for system control and live code notifications.</p>
+<p align="center">Telegram Bot for system control and runtime notifications.</p>
 
 **Current development status: BETA** - All the main functions are implemented. Need to make debug before release.
 
@@ -100,6 +100,7 @@ bin/make-service.sh
 ```
 In case of issues, you can configure systemd by yourself. A template service file is placed in `lib/hermes.service`.
 
+To check the stdout of the service run `sudo journalctl -u hermes`.
 
 ### Authorize bot to poweroff/reboot system
 
