@@ -23,7 +23,7 @@ echo " [hermes] using config path $TARGET"
 
 # set the names of register file
 REGISTER_FILE="$TARGET/log/register.tmp"
-AUTH_FILE="$TARGET/auth.txt"
+AUTH_FILE="$TARGET/users.key"
 
 # set time to wait for users to send the \register command
 LINGER_TIME=10

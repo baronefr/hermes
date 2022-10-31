@@ -17,7 +17,7 @@ import hermes
 namespace = { # configuration files
               'SETUP_FILE'     : 'setup.hermes',
               'SETTINGS_FILE'  : 'settings.ini',
-              'AUTH_FILE'      : 'auth.txt',
+              'AUTH_FILE'      : 'users.key',
               'LOG_DIR'        : 'log/',  # dev: do not change this... there might be unmanaged references
               'EXTERNAL_EXE'   : 'external.py',
               

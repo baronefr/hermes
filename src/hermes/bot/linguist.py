@@ -26,11 +26,10 @@ class std:
     help = """📢 Hello General Kenobi!\n
     /toctoc    bot check
     /about     dev credits
-    /register  register new user
               
     /power     power management
-    /tasks     Hermes Task
-    /sentinel  process monitor"""
+    /tasks     Hermes tasks
+    """
     
     help_external = "/{} - {}\n"
     
