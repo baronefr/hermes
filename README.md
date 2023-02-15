@@ -10,8 +10,6 @@ Ver 1.0, 31 October 2022
 
 ## What can Hermes do?
 
-![feat_cover](img/cover.jpg)
-
 - **Bot**
     - poweroff / reboot your system
     - power status
@@ -33,10 +31,10 @@ In this guide, I will walk you through the installation of Hermes in a Linux sys
 - `/opt/hermes` for the Hermes Python library & bin files
 - `~/.local/hermes/` for the private keys, settings and logs (*Hermes private directory*)
 
-**1)** Clone this repo in `/opt/hermes` and add execution permission.
+**1)** Clone this repo in `/opt/hermes` and free the folder from r/w restrictions. The folder in /opt/ will not contain any data of yours.
 ```bash
 sudo git clone https://github.com/baronefr/hermes.git /opt/hermes
-chmod +x /opt/hermes/bin/*
+sudo chmod 777 /opt/hermes/ -R
 ```
 
 **2)** Install the Hermes Python library.
