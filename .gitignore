@@ -5,6 +5,7 @@ hermes.egg-info/
 
 # development
 hidden/*
+build/*
 
 # examples images
 examples/*.png

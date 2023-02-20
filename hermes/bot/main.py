@@ -31,35 +31,36 @@ from hermes.bot.linguist import std as mstd
 #
 class bot():
     
-    def __init__(self, settings = None, info = False) -> None:
+    def __init__(self, override = None, info = False) -> None:
         
         ##    housekeeping  -------------------------------
         
         # if argument is not valid, override settings dir with default policy rule
-        if settings is None: PREFIX = hermes.common.settings_default_policy()
-        else:                PREFIX = settings
+        if override is None: PREFIX = hermes.common.settings_default_policy()
+        else:                PREFIX = override
         
         if PREFIX[-1] != '/': PREFIX = PREFIX + '/'   # be sure last char is /
         
         if not os.path.isdir(PREFIX):
-            print('ERROR: settings path does not exist or it is not accessible')
-            print(' [i] target dir :', PREFIX)
+            hprint.err('settings path does not exist or it is not accessible')
+            hprint.append("target dir {}".format(PREFIX))
             sys.exit(1)
             
         settings_file = PREFIX + hermes.common.namespace['SETTINGS_FILE']
         if not os.path.isfile(settings_file):
-            print('ERROR: settings file does not exist or it is not accessible')
-            print(' [i] settings   :', settings_file)
+            hprint.err('settings file does not exist or it is not accessible')
+            hprint.append("settings file : {}".format(settings_file) )
             sys.exit(1)
-            
-            
         
-        ##    parsing  ------------------------------------
         
-        # read and parse configuration from file
+        
+        # --- parsing settings files ----------------------
+        
+        # read and parse settings file
         config = configparser.ConfigParser(interpolation=ExtendedInterpolation())
         config.read(settings_file)
         
+        ### mandatory arguments
         try:
             # general settings
             self.hostname = str( config['general']['hostname'] )
@@ -74,36 +75,56 @@ class bot():
             # task path
             self.task_path = str( config['task']['task_path'] )
             
-            # external modules - oneshot commands
-            external_oneshot = str( config['external']['oneshot'] )
-            if external_oneshot.lower() in ['', '0', 'none']:   external_oneshot = None
-            else:
-                external_oneshot = external_oneshot.replace(" ", "")   # remove spaces
-                external_oneshot = external_oneshot.split(",")  # make list of modules
-            
-            # external modules - query commands
-            external_query = str( config['external']['query'] )
-            if external_query.lower() in ['', '0', 'none']:     external_query = None
-            else:
-                external_query = external_query.replace(" ", "")       # remove spaces
-                external_query = external_query.split(",")      # make list of modules
-            
-        
         except Exception as e:
-            print('ERROR: settings.ini parsing error, check syntax')
-            print(' [i] settings.ini file :', settings_file)
-            print(' [i] parse error >> ', e)
+            hprint.err('settings parsing error, check file syntax')
+            print(' settings file :', settings_file)
+            print(' parse error >> ', e)
             sys.exit(1)
         
+
+        ### processing optional arguments
+        if config.has_section('modules'):
+            try:
+                # external modules - oneshot commands
+                if config.has_option('modules', 'oneshot'):
+                    external_oneshot = str( config['modules']['oneshot'] )
+                    if external_oneshot.lower() in ['', '0', 'none']:   external_oneshot = None
+                    else:
+                        external_oneshot = external_oneshot.replace(" ", "")   # remove spaces
+                        external_oneshot = external_oneshot.split(",")  # make list of modules
+                else:
+                    external_oneshot = None
+                
+                # external modules - query commands
+                if config.has_option('modules', 'oneshot'):
+                    external_query = str( config['modules']['query'] )
+                    if external_query.lower() in ['', '0', 'none']:     external_query = None
+                    else:
+                        external_query = external_query.replace(" ", "")       # remove spaces
+                        external_query = external_query.split(",")      # make list of modules
+                else:
+                    external_query = None
+
+            except Exception as e:
+                hprint.err('settings parsing error (optional), check file syntax')
+                print(' settings file :', settings_file)
+                print(' parse error >> ', e)
+                sys.exit(1)
+        
+        else:
+            # the settings file has no modules field, ignore
+            external_oneshot = None
+            external_query = None
+
+        # read and parse authorized users file
         self.auth_users, self.extra_lists = hermes.common.read_permissions(
-           PREFIX + hermes.common.namespace['AUTH_FILE']
+            PREFIX + hermes.common.namespace['AUTH_FILE']
         )
-        
-        
+                
         
         
         ##    import extern modules  ----------------------
-        self.ext_oneshot = {};       self.ext_query = {};
+        self.ext_oneshot = {};       self.ext_query = {}; 
         self.bonjour_pointer = None
         
         
@@ -118,9 +139,9 @@ class bot():
                 tmpquery   = getmembers(self.ext_module, isclass)      # get a list of  (name, class)
                 
             except Exception as e:
-                print('ERROR: external module error')
-                print(' [i] module file :', ext_exe)
-                print(' [i] error >> ', e)
+                hprint.err('external module error')
+                print(' module file :', ext_exe)
+                print(' error >> ', e)
                 sys.exit(1)
         
         #  -> select oneshots
@@ -151,19 +172,19 @@ class bot():
         
         
         
-        ##    init components  ----------------------------
+        ##    init companion modules  ----------------------------
         
         # init the bot & logger object
         try:   self.bot = telebot.TeleBot(MYTOKEN, parse_mode='Markdown')
         except Exception as e:
-            print('ERROR: bot init error');  print(e);
+            hprint.err('bot init error');  print(e); 
             sys.exit(1)
         
         try:   self.log = botlogger(path = PREFIX + hermes.common.namespace['LOG_DIR'])
         except Exception as e:
-            print('ERROR: logger init error');  print(e);
+            hprint.err('logger init error');  print(e); 
             sys.exit(1)
-            
+        
         
         # print info if requested
         if info:
@@ -190,7 +211,7 @@ class bot():
         self.bot.message_handler(commands=["help"])( hf.help )
         self.bot.message_handler(commands=["about"])( hf.about )
         self.bot.message_handler(commands=["toctoc"])( hf.toctoc )
-        self.bot.message_handler(commands=["register"])( hf.register )
+        #self.bot.message_handler(commands=["register"])( hf.register )  # deprecated
         
         self.bot.message_handler(commands=["power"])( hf.query_power )
         self.bot.message_handler(commands=["tasks"])( hf.query_tasks )

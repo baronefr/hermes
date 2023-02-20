@@ -71,3 +71,8 @@ class power:
     action_poweroff = "🛑 poweroff"
     action_reboot = "🔆 reboot"
     action_status = "〽️ status"
+
+class cli:
+    notice = "⌨️ spawning cmd {}"
+    exe_error = "[cli] 🚫 cmd ended with error"
+    exe_ok = "[cli] ✅ cmd ended"
