@@ -11,60 +11,86 @@ import argparse
 import subprocess
 
 from hermes import env_key
-from hermes.common import hprint
 from hermes.common import namespace
+from hermes.common import hprint
 from hermes.bot.linguist import cli as mcli
 
 import hermes.bot as hbot
 
-import threading
-from multiprocessing import Process
-import signal
-from time import sleep
-
-def ignore_sighup():
-    signal.signal(signal.SIGHUP, signal.SIG_IGN)
 
 
-def start_thread(func, name=None, args = []):
-    """Utility to start a background thread."""
-    threading.Thread(target=func, name=name, args=args, daemon=True).start()
+# some useful properties
+crop_command_len = 2   # max len of command to send in msg
+addition_separator = "\n---\n"  # separator when appending output message
 
 
-
-crop_command_len = 2
-
-def check_installation():
-    # TODO
+def check_installation():  # TODO
+    """Look for problems in current installation. Can be useful for debug."""
     pass
 
 
-def my_function():
-    # do some time-consuming work
-    sleep(5)
-    print('Done with function')
+def hook_message(msg : str, hook : str):
+    """Extract all the lines which have a custom flag from string msg."""
 
-def execute_command(commands : list, hbot, users : list, msg : str = None) -> None:
+    if hook == 'all': # return the full message
+        return msg
+    else:
+        msg = msg.splitlines()
+        out = []
+        for mm in msg: 
+            if hook in mm: out.append(mm.strip(hook))
+        out = '\n'.join(out)
     
-    #proc = subprocess.Popen(
-    #    commands, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
-    #    #preexec_fn=os.setpgrp
-    #)
-    
+    return out
 
-    #pid = str(proc.pid)
-    #print( 'process ID:', pid )
 
-    #proc.wait()
-    sleep(2)
-    #exit_code = proc.poll()
-    #output, error = proc.communicate()
+
+def execute_command(commands : list, hbot, users : list, msg : str = None, spawn_message = True, hook = None) -> None:
+    """Execute a command in a child process and send a message about its exit status."""
+
+    proc = subprocess.Popen(
+        commands, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+    )
+
+    msg = '' if msg is None else '({})'.format(msg)
+
+    if spawn_message:
+        # send a message before command execution
+        if len(commands) > crop_command_len:
+            notice = ' '.join(commands[:crop_command_len]) + ' ...'
+        else:
+            notice = ' '.join(commands)
+
+        for userid in users:
+            hbot.bot.send_message( userid, mcli.notice.format(notice) )
+
+    pid = str(proc.pid)
+    hprint.info("command PID : {}".format(pid), color='blue' )
+
+    proc.wait()
+    exit_code = proc.poll()
+    output, error = proc.communicate()
+
+    if exit_code == 0:
+        hprint.info('process exit without error')
+        stat = mcli.exe_ok.format(msg)
+        addition = hook_message(output, hook)
+    else:
+        hprint.err('process exit with error ({})'.format(exit_code) )
+        hprint.append(error)
+        stat = mcli.exe_error.format(msg, exit_code)
+        addition = error  # append error to message
+
+    addition = '' if addition == '' else addition_separator+addition
 
     for userid in users:
-        hbot.bot.send_message( userid, 'okkk' )
+        hbot.bot.send_message( userid, stat + addition )
 
-    sys.exit(0)
-    #sys.exit(exit_code)
+    sys.exit(exit_code) # return exit code of child process
+
+
+
+
 
 
 def main():
@@ -79,14 +105,15 @@ def main():
     parser.add_argument("--msg", "-m", type=str, default=None, help="message to be sent by the bot")
 
     parser.add_argument("--exe", "-e", type=str, default=[], nargs=argparse.REMAINDER, help="command to execute")
-    parser.add_argument("--background", "-b", action="store_true", help="execute command in background, if any")
+    parser.add_argument("--background", "-b", action="store_true", help="execute command in background, if any (experimental)")
     parser.add_argument("--notice", "-n", action="store_true", help="notice the command to be executed")
+    parser.add_argument("--hook", "-k", type=str, default=namespace['CLI_HOOK'], help="placeholder string to hook from exe output")
 
-    parser.add_argument("--user", "-u", type=str, default='all', help="select users (if more than one, must be comma separated)") # TODO
+    parser.add_argument("--user", "-u", type=str, default='all', help="select users (if more than one, must be comma separated)")
 
     parser.add_argument("--server" , "-s", action="store_true", help="start bot server")
     parser.add_argument("--dry-run", "-d", action="store_true", help="start bot (oneshot mode)")
-    parser.add_argument("--check", "-c", action="store_true", help="check installation status")
+    parser.add_argument("--check", "-c", action="store_true", help="check installation status") # TODO
     parser.add_argument("--override", "-o", type=str, default=None, help="override environment link")
 
     parser.add_argument("--verbose", "-v", action="store_true", help="additional verbosity of cli interface")
@@ -94,7 +121,7 @@ def main():
     args = parser.parse_args()
     VERB : bool = args.verbose  # additional verbosity (true or false)
 
-    if VERB: print(args)
+    if VERB: print('cli args :', args)
 
 
     #---------------------------------
@@ -109,7 +136,7 @@ def main():
         hprint.append('did you link an environment variable?')
         sys.exit(1)
     else:
-        hprint.info( "settings path is <{}>".format(PREFIX), color='blue' )
+        if VERB: hprint.info( "settings path is <{}>".format(PREFIX), color='blue' )
     
 
     # validate PREFIX: existence
@@ -141,7 +168,6 @@ def main():
     hb = hbot( override = PREFIX )
     hprint.info( "checkpoint: bot module loaded", color='green')
 
-
     # run the bot server
     if args.server:
         try:   hb.run()
@@ -161,8 +187,8 @@ def main():
         sys.exit(0)
 
 
-
     if VERB: hprint.info( "{} users detected".format(len(hb.auth_users)) , color='blue')
+
 
     USER_ID_LIST = []
     if args.user == 'all':
@@ -204,40 +230,36 @@ def main():
 
     if VERB: hprint.info( "{} users selected".format(len(USER_ID_LIST)) , color='blue')
     
-    # run a command and notify about the execution
+
+    # run a command and notify after its execution
     if args.exe:
-        hprint.info("executing <{}>".format( ' '.join(args.exe) ) )
+        hprint.info("executing <{}>".format( ' '.join(args.exe) ), color = 'blue' )
 
-        if args.notice:
-            # send a message before command execution
-            if len(args.exe) > crop_command_len:
-                notice = ' '.join(args.exe[:crop_command_len]) + ' ...'
-            else:
-                notice = ' '.join(args.exe)
-
-            for userid in USER_ID_LIST:
-                hb.bot.send_message( userid, mcli.notice.format(notice) )
-        
-        print('main PID', os.getpid())
+        # setup the output text hook flag
+        HOOK = args.hook
+        if HOOK in ['None','none']:  HOOK = None
 
         if args.background is False:
-            execute_command(args.exe, hb, USER_ID_LIST)
+            execute_command(args.exe, hb, USER_ID_LIST, spawn_message = args.notice, msg=args.msg, hook = HOOK)
         else:
-            #start_thread( execute_command, args=[args.exe, hb, USER_ID_LIST] )
-            pp = Process( target=execute_command, args=[args.exe, hb, USER_ID_LIST])#, daemon=False)
-            pp.daemon = True
-            pp.start()
-            print('thread started', pp.pid)
-            #sleep(5)
-            #sys.exit(0)
+            # note: this should work only on UNIX-like systems
+            pid = os.fork()
+            if pid == 0:
+                os.setsid()  # creates a new session
+                if VERB: hprint.info("continue on detached process {}".format( os.getpid() ) )
+                execute_command(args.exe, hb, USER_ID_LIST, spawn_message = args.notice, msg=args.msg, hook = HOOK)
+            else:
+                # exit from foreground execution
+                if VERB: print('Hermes main PID [{}]'.format(os.getpid()) )
+                sys.exit(0)
 
-
+    # just send a message
     if args.msg is not None:
         for userid in USER_ID_LIST:
             hb.bot.send_message( userid, args.msg )
         sys.exit(0)
-    
+
     # if you see this, it means the program has not stopped previously
-    # (which is what I want to happen...)
-    print('nothing to execute?')
-    #sys.exit(0)
+    #  (which is exactly what I want to happen...)
+    hprint.warn('nothing to execute?')
+    sys.exit(0)

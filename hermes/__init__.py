@@ -1,10 +1,10 @@
 #########################################################
 #   HERMES - telegram bot for system control & notify
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 1 Oct 2022
+#  coder: Barone Francesco, last edit: 18 Feb 2023
 #--------------------------------------------------------
 
-__version__ = '0.1.0'
+__version__ = '2.0.0'
 __major_review__ = '18 Feb 2023'
 
 
@@ -15,8 +15,6 @@ import os
 import hermes
 from hermes.bot  import bot
 from hermes.task import task
-
-from hermes.installer import setup
 
 
 ###################

@@ -131,7 +131,7 @@ class bot():
         if (external_oneshot is not None) or (external_query is not None):
         
             ext_exe = PREFIX + hermes.common.namespace['EXTERNAL_EXE']  # the custom .py file to look into
-            print(' [i] importing externals from ', ext_exe)
+            hprint.info('importing external modules from {}'.format(ext_exe), color='blue' )
             
             try:
                 self.ext_module = SourceFileLoader("external", ext_exe).load_module()
@@ -153,7 +153,7 @@ class bot():
                     else: self.bonjour_pointer = pointer   # bonjour is handled separately
                     continue
                 else:
-                    print(" [i] external function \"{}\" is not listed in settings, skip".format(name) )
+                    hprint.warn("external function \"{}\" is not listed in settings, skip".format(name) )
         
         #  -> select queries
         if (external_query is not None):
@@ -163,7 +163,7 @@ class bot():
                     self.ext_query[name] = pointer
                     continue
                 else:
-                    print(" [i] external class \"{}\" is not listed in settings, skip".format(name) )
+                    hprint.warn("external class \"{}\" is not listed in settings, skip".format(name) )
         
         # if still empty, disable it!
         if not self.ext_oneshot:  self.ext_oneshot = None

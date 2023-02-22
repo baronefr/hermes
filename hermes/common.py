@@ -14,24 +14,26 @@ import hermes
 
 
 class hprint:
+    """Class wrapper to print fancy colorful messages."""
     def std(string : str, head : str = 'hermes', color : str = 'blue') -> None:
-        if head is not None: print('[', colored(head, color), '] ', end = '')
+        if head is not None: print('[', colored(head, color, attrs=['bold']), '] ', end = '')
         print(string)
 
     def err(string : str, head : str = 'error') -> None:
-        if head is not None: print('[', colored(head, 'red'), '] ', end = '')
+        if head is not None: print('[', colored(head, 'red', attrs=['bold']), '] ', end = '')
         print(string)
 
     def warn(string : str, head : str = 'warning') -> None:
-        if head is not None: print('[', colored(head, 'yellow'), '] ', end = '')
+        if head is not None: print('[', colored(head, 'yellow', attrs=['bold']), '] ', end = '')
         print(string)
 
     def info(string : str, head : str = 'info', color : str = 'green') -> None:
-        if head is not None: print('[', colored(head, color), '] ', end = '')
+        if head is not None: print('[', colored(head, color, attrs=['bold']), '] ', end = '')
         print(string)
 
     def append(string : str) -> None:
         print('  ∟ ', string)
+
 
 #  DEFAULT NAMESPACE -----------------------------------------------
 #
@@ -60,8 +62,16 @@ namespace = {
     
     # task etc
     'TINDEX_HEAD'    : "Hermes Task - index file [{}]\n",
-    'TINDEX_FIELDS'  : "id,alias,pid,spawntime,status"
+    'TINDEX_FIELDS'  : "id,alias,pid,spawntime,status",
+
+    # cli
+    'CLI_HOOK' : "%HERMES%"
 }
+
+
+def hook_default() -> str:
+    """Returns the default CLI hook flag."""
+    return namespace['CLI_HOOK']
 
 
 bot_timeout = 30   # max age of messages to process [seconds]

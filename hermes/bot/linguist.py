@@ -72,7 +72,8 @@ class power:
     action_reboot = "🔆 reboot"
     action_status = "〽️ status"
 
+
 class cli:
-    notice = "⌨️ spawning cmd {}"
-    exe_error = "[cli] 🚫 cmd ended with error"
-    exe_ok = "[cli] ✅ cmd ended"
+    notice = "\[cli] spawning cmd <{}>"
+    exe_error = "\[cli] {} 🚫 cmd quitted (error {})"
+    exe_ok = "\[cli] {} cmd ended ✅"

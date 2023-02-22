@@ -22,7 +22,7 @@ setup(
     license="Open Access",
     python_requires='>=3.5',
     packages=find_packages(),
-    install_requires=["pyTelegramBotAPI"],
+    install_requires=["pyTelegramBotAPI","termcolor"],
     zip_safe=False,
     classifiers=[
         "Development Status :: 5 - Production/Stable",

@@ -13,37 +13,11 @@ import click
 import argparse
 import configparser
 
-
-
 from hermes import env_key
-from hermes.common import hprint
 from hermes.common import namespace
+from hermes.common import hprint
 
-
-setup_template = """hostname={}
-token={}
-chatid={}
-userid={}"""
-
-settings_template = """[general]
-hostname={}
-token={}
-
-[bot]
-log_dir=log/
-unauthorized_ghosting=true
-unknown_command_ignore=true
-
-[task]
-task_path=/tmp/hermes/
-default_user=0
-
-[modules]
-oneshot=netstat
-query=None"""
-
-auth_template = "chatid,name,bonjour,active\n"
-env_template = "\n# private hermes env\nexport {}=\"{}\"\n"
+from hermes.templates import *
 
 
 
@@ -115,11 +89,28 @@ def make_auth(fname, setup) -> None:
         sys.exit(1)
 
 
+def make_external(fname) -> None:
+    """Write the external module template."""
+
+    try:
+        f = open( fname, "w")
+        f.write( external_template )
+        f.close()
+        
+    except Exception as e:
+        hprint.err("cannot write {} file".format(fname) )
+        print(e)
+        sys.exit(1)
+
+
+
 def make_env_link(fname, to):
     f = open(fname, "a")
     f.write( env_template.format( env_key, to) )
     f.close()
-    
+
+
+
 
 
 
@@ -272,6 +263,9 @@ def main():
     make_auth(PREFIX + namespace['AUTH_FILE'], this_setup)
     hprint.info("checkpoint: users file")
 
+    ### write external modules file
+    make_external(PREFIX + namespace['EXTERNAL_EXE'])
+    hprint.info("checkpoint: module file")
 
     print("\nsetup completed\n")
 
