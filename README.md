@@ -6,6 +6,9 @@
 
 <br>
 
+<div align="center">
+    <img src="img/cover.png">
+</div>
 
 ## What can Hermes do?
 
