@@ -145,6 +145,7 @@ echo  'echo -e "#hermes priv\n%$USER ALL=NOPASSWD: /bin/systemctl" >> /etc/sudoe
 
 Otherwise, just find the proper way for your OS to edit the **sudoers** file and allow the execution of `/bin/systemctl`.
 
+
 <br><br>
 
 ## Usage
@@ -152,6 +153,7 @@ Otherwise, just find the proper way for your OS to edit the **sudoers** file and
 TODO
 
 
-
-
+---
+<p align="center">
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
+</p>
