@@ -385,5 +385,8 @@ class task():
     def plotify_set_ext(self, new : str) -> None:
         PICTURE_DEFAULT_EXT = new
 
+
+
+
 if __name__ == "__main__":
     print("Don't run this, fool of a Took!\n take a look at the Task demo file instead!")

@@ -24,6 +24,8 @@ crop_command_len = 2   # max len of command to send in msg
 addition_separator = "\n---\n"  # separator when appending output message
 
 
+
+
 def check_installation():  # TODO
     """Look for problems in current installation. Can be useful for debug."""
     pass
@@ -165,7 +167,7 @@ def main():
 
     # setup the bot
     if VERB:  hprint.info( "loading bot module", color='blue')
-    hb = hbot( override = PREFIX )
+    hb = hbot( override = PREFIX, external = False )
     hprint.info( "checkpoint: bot module loaded", color='green')
 
     # run the bot server
@@ -257,6 +259,7 @@ def main():
     if args.msg is not None:
         for userid in USER_ID_LIST:
             hb.bot.send_message( userid, args.msg )
+        if VERB: hprint.info("message(s) sent" )
         sys.exit(0)
 
     # if you see this, it means the program has not stopped previously

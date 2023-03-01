@@ -111,9 +111,6 @@ def make_env_link(fname, to):
 
 
 
-
-
-
 def main():
     print('>> hermes setup utility')
 
@@ -151,6 +148,7 @@ def main():
         PREFIX += '.local/.hermes/'
     
     else:
+        # config folder: use custom prefix
         PREFIX = args.to
 
     SETUP_FILE = args.setup
