@@ -32,5 +32,6 @@ setup(
     ],
     entry_points={
         "console_scripts": ["hermes=hermes.cli:main", "hermes-setup=hermes.setup:main"],
-    }
+    },
+    scripts=['bin/hermes-start.py'],
 )
