@@ -46,7 +46,7 @@ class task:
     
     # errors in query
     index_not_available = "⚠️ index file not available"
-    index_empty = "⚠️ index is empty"
+    index_empty = "🗑️ no tasks found, yet"
     task_query_error = "⭕️ task query error"
     
     # markup symbols

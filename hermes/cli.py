@@ -118,6 +118,8 @@ def main():
     parser.add_argument("--check", "-c", action="store_true", help="check installation status") # TODO
     parser.add_argument("--override", "-o", type=str, default=None, help="override environment link")
 
+    parser.add_argument("--tasks", "-t", action="store_true", help="list tasks") # TODO
+
     parser.add_argument("--verbose", "-v", action="store_true", help="additional verbosity of cli interface")
 
     args = parser.parse_args()

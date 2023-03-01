@@ -13,6 +13,7 @@ import telebot
 
 import os
 import sys
+from datetime import datetime
 import configparser
 from configparser import ExtendedInterpolation
 from importlib.machinery import SourceFileLoader
@@ -207,7 +208,7 @@ class bot():
 
     
     # start the bot
-    def run(self, bonjour = True, dry_run = False) -> None:
+    def run(self, bonjour = True, dry_run = False, init_task : bool = True) -> None:
         
         # init the function handler class
         hf = handlers(self, oneshot = self.ext_oneshot, query = self.ext_query)
@@ -219,7 +220,7 @@ class bot():
         self.bot.message_handler(commands=["help"])( hf.help )
         self.bot.message_handler(commands=["about"])( hf.about )
         self.bot.message_handler(commands=["toctoc"])( hf.toctoc )
-        #self.bot.message_handler(commands=["register"])( hf.register )  # deprecated
+        #self.bot.message_handler(commands=["register"])( hf.register )  # deprecated in (server) bot implementation since v2
         
         self.bot.message_handler(commands=["power"])( hf.query_power )
         self.bot.message_handler(commands=["tasks"])( hf.query_tasks )
@@ -253,7 +254,14 @@ class bot():
         # this has to be placed as final entry, to handle unmatched commands
         self.bot.message_handler(func = lambda message: True)( hf.unmatched )
         
-        
+
+        # create an empty task index file
+        if init_task:
+            
+            task_path = self.task_path
+            hermes.common.index_access(task_path, task_path + hermes.common.namespace['TASK_INDEX'] , datetime.now().strftime( hermes.common.namespace['LOG_TIMESTAMP'] ) )
+
+
         ###############
         #   connect   #
         ###############

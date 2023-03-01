@@ -59,6 +59,9 @@ def failsafe(function):
 PICTURE_TIME_FORMAT = "_%H-%M-%S"
 PICTURE_DEFAULT_EXT = '.png'
 
+
+
+
 # ------------------------------------------------------------------
 #  Task object -----------------------------------------------------
 #
@@ -101,7 +104,7 @@ class task():
             USRDF = str( config['task']['default_user'] )
             
         except Exception as err:
-            raise Exception('error in settings argument parser. Maybe something is missing?') from err
+            raise Exception('Error in settings argument parser. Maybe something is missing?') from err
         
         
         # setup logger (if not logless mode) & this task alias
@@ -172,6 +175,10 @@ class task():
         print("[task] <{}> has been initialized [id:{}]".format(self.alias, self.id) )
     
     
+
+
+
+
     # send txt or image to each user
     #  Note: for INTERNAL use, FAILSAFE to be handled explicitly!
     #

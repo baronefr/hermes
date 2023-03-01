@@ -94,7 +94,7 @@ def index_touch(ifile: str, iid : str, new_entries : dict) -> None: # pattern, s
                 else: new_line = line
                 
                 new_file.write(new_line) 
-                
+    
     # copy file permissions
     copymode(ifile, abs_path)
     
