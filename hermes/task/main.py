@@ -17,7 +17,6 @@ from configparser import ExtendedInterpolation
 from datetime import datetime
 from types import ModuleType
 import io
-from PIL import Image
 
 from hermes.common import *
 from hermes.task.logger import tasklogger

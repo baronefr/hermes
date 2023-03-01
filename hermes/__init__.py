@@ -4,9 +4,6 @@
 #  coder: Barone Francesco, last edit: 18 Feb 2023
 #--------------------------------------------------------
 
-__version__ = '2.0.0'
-__major_review__ = '18 Feb 2023'
-
 
 # system modules
 import os
@@ -15,7 +12,8 @@ import os
 import hermes
 from hermes.bot  import bot
 from hermes.task import task
-
+from hermes.version import __version__ as __version__
+from hermes.version import __major_review__ as __major_review__
 
 ###################
 #  some settings  #
@@ -36,11 +34,12 @@ def status():
     print(' this env variable: ', os.environ.get(env_key) )
 
 def version():
-    print('hermes | v', __version__)
-    print(' major review:', __major_review__)
+    print('ver : ', __version__, '(rev {})'.format(__major_review__) )
 
 def credits():
-    print('hermes | v', __version__)
-    print(' F.P. Barone')
-    print(' github.com/baronefr')
+    print('hermes | library for system control & notifications')
+    print('')
+    print(' ver : ', __version__, '(rev {})'.format(__major_review__) )
+    print('')
+    print(' dev: F.P. Barone - github.com/baronefr')
     

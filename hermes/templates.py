@@ -31,6 +31,9 @@ auth_template = "chatid,name,bonjour,active\n"
 env_template = "\n# private hermes env\nexport {}=\"{}\"\n"
 
 
+
+
+
 external_template = """
 #########################################################
 #   HERMES - telegram bot for system control & notify
@@ -85,4 +88,24 @@ def netstat() -> str:
 ##   QUERY ------------------------------------------------
 
 # To see a custom query implementation, look at lib/external.py
+"""
+
+
+
+
+systemd_template = """[Unit]
+Description=Hermes host
+After=network-online.target
+
+[Service]
+Type=simple
+User={}
+Group={}
+Environment={}
+ExecStart={}
+Restart=on-failure
+RestartSec=120
+
+[Install]
+WantedBy=multi-user.target
 """

@@ -9,6 +9,8 @@ import os
 import sys
 import socket
 import click
+import subprocess
+import shutil
 
 import argparse
 import configparser
@@ -20,6 +22,9 @@ from hermes.common import hprint
 from hermes.templates import *
 
 
+# ---------------------
+#  some useful things
+# ---------------------
 
 def make_empty_setup(fname):
     """Create an empty setup file for Hermes, to be edited by the user before running setup script."""
@@ -54,7 +59,6 @@ def make_empty_setup(fname):
 
     hprint.info("file written")
 
-
 def make_settings(fname, setup) -> None:
     """Write the settings file in target directory."""
 
@@ -67,7 +71,6 @@ def make_settings(fname, setup) -> None:
         hprint.err("cannot write {} file".format(fname) )
         print(e)
         sys.exit(1)
-
 
 def make_auth(fname, setup) -> None:
     """Write the user table file in target directory."""
@@ -88,7 +91,6 @@ def make_auth(fname, setup) -> None:
         print(e)
         sys.exit(1)
 
-
 def make_external(fname) -> None:
     """Write the external module template."""
 
@@ -102,13 +104,44 @@ def make_external(fname) -> None:
         print(e)
         sys.exit(1)
 
-
-
 def make_env_link(fname, to):
     f = open(fname, "a")
     f.write( env_template.format( env_key, to) )
     f.close()
 
+
+def make_systemd_service(fname):
+
+    # get user data
+    username = os.environ.get('USER')
+
+    query = subprocess.run(['which', 'python3'], stdout=subprocess.PIPE)
+    python_exe = query.stdout.decode('utf-8').strip('\n')
+
+    query = subprocess.run(['which', 'hermes-start.py'], stdout=subprocess.PIPE)
+    bot_exe = query.stdout.decode('utf-8').strip('\n')
+
+    hprint.info( 'linking {} -> {}'.format(python_exe, bot_exe), color='blue' )
+
+    f = open(fname, "w")
+    f.write( systemd_template.format(
+            # username and group
+            username, username,
+            # env variable
+            "{}={}".format(env_key, os.environ.get(env_key)),
+            # exec start
+            "{} {}".format(python_exe, bot_exe)
+        )
+    )
+    f.close()
+
+
+
+
+
+# ---------------------
+#         MAIN
+# ---------------------
 
 
 def main():
@@ -120,12 +153,20 @@ def main():
 
     parser = argparse.ArgumentParser(formatter_class = argparse.ArgumentDefaultsHelpFormatter)
 
+    # select a setup file
     parser.add_argument("--setup", "-s", type=str, default=namespace['SETUP_FILE'],
                                           help="setup file")
+
+    # quick actions
+    parser.add_argument("--make", "-m", action="store_true", help="create a template setup file")
+    parser.add_argument("--systemd", "-d", action="store_true", help="create a systemd service with current configuration")
+
+    # advanced options
     parser.add_argument("--to", "-t", type=str, default='home', help="destination of setup")
     parser.add_argument("--force", "-f", action="store_true", help="force the setup procedure")
-    parser.add_argument("--make", "-m", action="store_true", help="create an empty setup file")
     parser.add_argument("--env", "-e", type=str, default='.bashrc', help="target env file")
+
+    # etc
     parser.add_argument("--verbose", "-v", action="store_true", help="print more details about setup")
 
     args = parser.parse_args()
@@ -160,6 +201,10 @@ def main():
 
     if args.make:
         make_empty_setup(SETUP_FILE)
+        sys.exit(0)
+
+    if args.systemd:
+        make_systemd_service('hermes.service')
         sys.exit(0)
     
 
@@ -298,9 +343,11 @@ def main():
 
     hprint.info('linking env variable to {}'.format(ENV_TARGET))
     try:
-        # TODO create backup copy of file
-        #make_env_link( ENV_TARGET, PREFIX)         # TODO remove comment before publish
-        pass
+        if os.path.isfile(ENV_TARGET):  # create a backup copy if file exists
+            shutil.copy2(ENV_TARGET, ENV_TARGET + '.bak' )  
+
+        make_env_link( ENV_TARGET, PREFIX)
+
     except e:
         hprint.err('cannot append value to env file')
         print(e)

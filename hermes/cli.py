@@ -10,7 +10,7 @@ import sys
 import argparse
 import subprocess
 
-from hermes import env_key
+from hermes import env_key, __version__, credits, version, status
 from hermes.common import namespace
 from hermes.common import hprint
 from hermes.bot.linguist import cli as mcli
@@ -24,11 +24,6 @@ crop_command_len = 2   # max len of command to send in msg
 addition_separator = "\n---\n"  # separator when appending output message
 
 
-
-
-def check_installation():  # TODO
-    """Look for problems in current installation. Can be useful for debug."""
-    pass
 
 
 def hook_message(msg : str, hook : str):
@@ -104,23 +99,35 @@ def main():
 
     parser = argparse.ArgumentParser(formatter_class = argparse.ArgumentDefaultsHelpFormatter)
 
+    # just send a message
     parser.add_argument("--msg", "-m", type=str, default=None, help="message to be sent by the bot")
+    parser.add_argument("--image", "-i", type=str, default=None, help="attach an image")
+    parser.add_argument("--file", "-f", type=str, default=None, help="attach a generic file")
 
+    # execute something and send a message when execution is completed
     parser.add_argument("--exe", "-e", type=str, default=[], nargs=argparse.REMAINDER, help="command to execute")
     parser.add_argument("--background", "-b", action="store_true", help="execute command in background, if any (experimental)")
     parser.add_argument("--notice", "-n", action="store_true", help="notice the command to be executed")
     parser.add_argument("--hook", "-k", type=str, default=namespace['CLI_HOOK'], help="placeholder string to hook from exe output")
 
-    parser.add_argument("--user", "-u", type=str, default='all', help="select users (if more than one, must be comma separated)")
-
+    # bot execution
     parser.add_argument("--server" , "-s", action="store_true", help="start bot server")
     parser.add_argument("--dry-run", "-d", action="store_true", help="start bot (oneshot mode)")
-    parser.add_argument("--check", "-c", action="store_true", help="check installation status") # TODO
+    
+    # select users to whom the message will be sent
+    parser.add_argument("--user", "-u", type=str, default='all', help="select users (if more than one, must be comma separated)")
+
+    # informative commands
+    parser.add_argument("--list-users", "-l", action="store_true", help="list available users")
+    parser.add_argument("--check", "-c", action="store_true", help="check installation status")
+    #parser.add_argument("--tasks", "-t", action="store_true", help="list tasks")       # TODO in next release
+
+    # advanced options
     parser.add_argument("--override", "-o", type=str, default=None, help="override environment link")
-
-    parser.add_argument("--tasks", "-t", action="store_true", help="list tasks") # TODO
-
     parser.add_argument("--verbose", "-v", action="store_true", help="additional verbosity of cli interface")
+
+    # etc
+    parser.add_argument("--about", "-a", action="store_true", help="about the author of this bot")
 
     args = parser.parse_args()
     VERB : bool = args.verbose  # additional verbosity (true or false)
@@ -128,6 +135,14 @@ def main():
     if VERB: print('cli args :', args)
 
 
+    if args.about:  # print the credits message
+        credits()
+        sys.exit(0)
+
+    if args.check:
+        status()
+        sys.exit(0)
+    
     #---------------------------------
     #          ENV CHECKING
     #---------------------------------
@@ -157,9 +172,7 @@ def main():
     #          QUICK ACTIONS
     #---------------------------------
 
-    if args.check is True:
-        check_installation()
-        sys.exit(0)
+    # pass
 
 
 
@@ -191,9 +204,26 @@ def main():
         sys.exit(0)
 
 
+    # just list available users
+    if args.list_users:
+        hprint.info( "listing available users:", color='blue')
+        print('-'*30)
+
+        i = 0
+        for k, v in hb.auth_users.items():
+            hidden = str(v)[:4] + '*'*len(str(v)[4:])
+            print( '  {}) '.format(i), k, hidden)
+        
+        print('-'*30)
+        sys.exit(0)
+
+
+
+
+
     if VERB: hprint.info( "{} users detected".format(len(hb.auth_users)) , color='blue')
 
-
+    # select users depending on user arg ---------------
     USER_ID_LIST = []
     if args.user == 'all':
         # use all the authorized users
@@ -219,7 +249,6 @@ def main():
         except ValueError:
             hprint.err('cannot convert user digit string to int')
             sys.exit(1)
-        
         if usr >= len(hb.auth_users):
             hprint.err('user number ({}) exceeds number of available ({}) users'.format(usr, len(hb.auth_users)))
             # remark: index numeration starts from zero
@@ -227,13 +256,14 @@ def main():
         else:
             # take number
             USER_ID_LIST.append( list(hb.auth_users.values())[usr] )
-    
+
     else:
         hprint.err('unknown user id : {}'.format(args.user) )
         sys.exit(1)
 
     if VERB: hprint.info( "{} users selected".format(len(USER_ID_LIST)) , color='blue')
     
+
 
     # run a command and notify after its execution
     if args.exe:
@@ -257,12 +287,45 @@ def main():
                 if VERB: print('Hermes main PID [{}]'.format(os.getpid()) )
                 sys.exit(0)
 
-    # just send a message
+
+    # just send an image
+    if args.image is not None:
+
+        try:    photo = open(args.image, 'rb')
+        except:
+            hprint.err( 'cannot open image file {}'.format(args.image) )
+            sys.exit(1)
+
+        for userid in USER_ID_LIST:
+            hb.bot.send_photo( userid, photo, caption = args.msg )
+        if VERB: hprint.info("image sent" )
+        sys.exit(0)
+
+
+
+    # just send a file
+    if args.file:
+
+        try:    doc = open(args.file, 'rb')
+        except:
+            hprint.err( 'cannot open doc file {}'.format(args.file) )
+            sys.exit(1)
+
+        for userid in USER_ID_LIST:
+            hb.bot.send_document( userid, doc, caption = args.msg )
+        if VERB: hprint.info("document sent" )
+        sys.exit(0)
+
+
+
+    # just send a txt message
     if args.msg is not None:
         for userid in USER_ID_LIST:
             hb.bot.send_message( userid, args.msg )
-        if VERB: hprint.info("message(s) sent" )
+        if VERB: hprint.info("message sent" )
         sys.exit(0)
+
+
 
     # if you see this, it means the program has not stopped previously
     #  (which is exactly what I want to happen...)
