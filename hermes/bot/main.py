@@ -257,9 +257,11 @@ class bot():
 
         # create an empty task index file
         if init_task:
-            
-            task_path = self.task_path
-            hermes.common.index_access(task_path, task_path + hermes.common.namespace['TASK_INDEX'] , datetime.now().strftime( hermes.common.namespace['LOG_TIMESTAMP'] ) )
+            try:
+                task_path = self.task_path
+                hermes.common.index_access(task_path, task_path + hermes.common.namespace['TASK_INDEX'] , datetime.now().strftime( hermes.common.namespace['LOG_TIMESTAMP'] ) )
+            except:
+                hprint.err('cannot init task index, but this is not fatal...')
 
 
         ###############
