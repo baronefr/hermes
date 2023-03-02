@@ -25,7 +25,7 @@ setup(
     license="CC BY-NC-ND",
     python_requires='>=3.5',
     packages=find_packages(),
-    install_requires=["pyTelegramBotAPI","termcolor"],
+    install_requires=["pyTelegramBotAPI","termcolor","psutil","shutil","click","socket"],
     zip_safe=False,
     classifiers=[
         "Development Status :: 5 - Production/Stable",
