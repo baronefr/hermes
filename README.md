@@ -1,7 +1,7 @@
 <h1 align="center">hermes</h1>
 <p align="center">Telegram Bot for system control and runtime notifications.</p>
 
-![version](https://img.shields.io/badge/version-v%202.0-blue)
+![version](https://img.shields.io/badge/version-2.0-blue)
 
 
 <br>
@@ -48,9 +48,9 @@ In this section, I will walk you through the installation of Hermes on a Linux s
 
 *Note*: **Optional steps** are marked with ⏸ and **more advanced suggestions** are marked with 🔆.
 
-ℹ️ **about your sensitive data** | The bot will use *sensitive data*: your private bot token and chatid. The private configuration files will be stored by default in your home directory, under `~/.hermes/`. This folder will contain the private key of the bot, user settings and log files.
+> ℹ️ **about your sensitive data** | The bot will use *sensitive data*: your private bot token and chatid. The private configuration files will be stored by default in your home directory, under `~/.hermes/`. This folder will contain the private key of the bot, user settings and log files.
 
-
+<br>
 
 **1)** Clone this repo and install the Hermes Python library.
 ```bash
@@ -58,7 +58,7 @@ git clone https://github.com/baronefr/hermes.git
 pip3 install ./hermes
 ```
 
-
+<br>
 
 **2)** Using your preferred text editor, create a `setup.hermes` file that will be used by the Hermes installer. 
 
@@ -75,9 +75,9 @@ where
 * `chatid` (number) - ID associated to your Telegram account. If you don't know it yet, there are other bots that will echo your chat id (like @chatid\_echo\_bot).
 * `userid` (string) - a string associated to your chatid, for friendly reference
 
-⏸ (optional) There is a shortcut to create a template setup file from scratch, if you wish. Just execute the command `hermes-setup -m`. The template file will be created in your current directory.
+> ⏸ (optional) There is a shortcut to create a template setup file from scratch, if you wish. Just execute the command `hermes-setup -m`. The template file will be created in your current directory.
 
-
+<br>
 
 **3)** Use the wizard to complete the setup.
 ```bash
@@ -86,14 +86,11 @@ hermes-setup
 
 I recommend to **close and re-open your terminal** to make sure that Hermes has been linked properly.
 
-⏸ (optional) If the setup is successful, I suggest to remove the `setup.hermes` file, as it contains sensitive informations about your bot.
+> ⏸ (optional) If the setup is successful, I suggest to remove the `setup.hermes` file, as it contains sensitive informations about your bot.
 
-🔆 (optional) The script should have created an enviroment variable `HERMES_ENV_SETTINGS`, which links to your private configuration files. Check that the variable exists with:
-```bash
-echo $HERMES_ENV_SETTINGS
-```
+> 🔆 (optional) The script should have created an enviroment variable `HERMES_ENV_SETTINGS`, which links to your private configuration files. Check that the variable exists with the command `echo $HERMES_ENV_SETTINGS`.
 
-
+<br>
 
 **4)** Test the bot with a dry run.
 ```bash
@@ -116,7 +113,7 @@ However, if the terminal is killed, it will also kill the bot service.
 
 **If you plan to keep the bot executed in background**, I find much more useful to **setup a systemd service**, so that the bot is executed automatically at boot. Take a look at the next section!
 
-
+<br>
 
 ### Setup systemd service
 
@@ -138,6 +135,7 @@ sudo systemctl start hermes.service
 - 🔆 **In case of issues in the systemd setup**, you can configure it from scratch. I placed in `lib/hermes.service` a template for a systemd service. You should already know how to deal with this files, otherwise it is a good chance to learn. :)
 - 🔆 **In case of issues in the execution of Hermes as a service**, you would like to check the stdout of the service with `sudo journalctl -u hermes`. In most cases, the problems are file permissions or missing environment variables.
 
+<br>
 
 ### 🔆 Authorize bot to poweroff/reboot system
 

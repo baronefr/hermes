@@ -14,7 +14,7 @@ def read_version(fname="hermes/version.py"):
 
 
 setup(
-    name="hermes",
+    name="hermes-bot",
     py_modules=["hermes"],
     version=read_version(),
     description=description,
