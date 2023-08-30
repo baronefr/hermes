@@ -115,11 +115,14 @@ def make_systemd_service(fname):
     # get user data
     username = os.environ.get('USER')
 
+    # get the name of python executable
     query = subprocess.run(['which', 'python3'], stdout=subprocess.PIPE)
     python_exe = query.stdout.decode('utf-8').strip('\n')
 
-    query = subprocess.run(['which', 'hermes-start.py'], stdout=subprocess.PIPE)
+    # get the path of hermes script (with --server execution flag)
+    query = subprocess.run(['which', 'hermes'], stdout=subprocess.PIPE)
     bot_exe = query.stdout.decode('utf-8').strip('\n')
+    bot_exe += ' --server'
 
     hprint.info( 'linking {} -> {}'.format(python_exe, bot_exe), color='blue' )
 
