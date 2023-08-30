@@ -15,7 +15,7 @@ from hermes.common import namespace
 from hermes.common import hprint
 from hermes.bot.linguist import cli as mcli
 
-from hermes.bot.main import bot as hbot
+from hermes.bot import bot as hbot
 
 
 
@@ -347,5 +347,5 @@ def main():
 
     # if you see this, it means the program has not stopped previously
     #  (which is exactly what I want to happen...)
-    hprint.warn('nothing to execute?')
+    hprint.warn('is there nothing for me to do?')
     sys.exit(0)
