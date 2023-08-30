@@ -1,7 +1,7 @@
 <h1 align="center">hermes</h1>
-<p align="center">Telegram Bot for system control and runtime notifications.</p>
+<p align="center">Telegram Bot for messages & system control.</p>
 
-![version](https://img.shields.io/badge/version-2.0-blue)
+![version](https://img.shields.io/badge/version-2.1-blue)
 
 
 <br>
@@ -55,7 +55,7 @@ In this section, I will walk you through the installation of Hermes on a Linux s
 **1)** Clone this repo and install the Hermes Python library.
 ```bash
 git clone https://github.com/baronefr/hermes.git
-pip3 install ./hermes
+pip3 install .
 ```
 
 <br>
@@ -73,9 +73,9 @@ where
 * `hostname` (string) - the name you would like to assign to your computer
 * `token` (string) - the [Telegram bot](https://core.telegram.org/bots/api#authorizing-your-bot) token
 * `chatid` (number) - ID associated to your Telegram account. If you don't know it yet, there are other bots that will echo your chat id (like @chatid\_echo\_bot).
-* `userid` (string) - a string associated to your chatid, for friendly reference
+* `userid` (string) - a string to be associated to your chatid, for friendly reference
 
-> ⏸ (optional) There is a shortcut to create a template setup file from scratch, if you wish. Just execute the command `hermes-setup -m`. The template file will be created in your current directory.
+> ⏸ (hint) The command `hermes-setup -m` can create in your local folder an empty setup file to be edited.
 
 <br>
 
@@ -92,6 +92,7 @@ I recommend to **close and re-open your terminal** to make sure that Hermes has 
 
 <br>
 
+
 **4)** Test the bot with a dry run.
 ```bash
 hermes --dry-run
@@ -101,6 +102,8 @@ hermes --dry-run
 
 
 <br>
+
+
 
 
 ## Execute the bot on current shell

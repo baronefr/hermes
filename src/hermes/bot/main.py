@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
 
 #########################################################
-#   HERMES - telegram bot for system control & notify
+#   HERMES - telegram bot for messages & system control
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 02 october 2022
+#  coder: Barone Francesco, last edit: 2 Oct 2022
 #--------------------------------------------------------
 
 #  This file is the bot object implementation. Here you can:

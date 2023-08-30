@@ -1,6 +1,6 @@
 # tmp and locals
 **/__pycache__/
-hermes.egg-info/
+**/hermes.egg-info/
 **/.ipynb_checkpoints/
 
 # development

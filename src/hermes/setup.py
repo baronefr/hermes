@@ -1,8 +1,8 @@
 
 #########################################################
-#   HERMES - telegram bot for system control & notify
+#   HERMES - telegram bot for messages & system control
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 18 Feb 2022
+#  coder: Barone Francesco, last edit: 30 Aug 2023
 #--------------------------------------------------------
 
 import os
@@ -162,7 +162,7 @@ def main():
     parser.add_argument("--systemd", "-d", action="store_true", help="create a systemd service with current configuration")
 
     # advanced options
-    parser.add_argument("--to", "-t", type=str, default='home', help="destination of setup")
+    parser.add_argument("--to", "-t", type=str, default='local', help="where to create the setup files")
     parser.add_argument("--force", "-f", action="store_true", help="force the setup procedure")
     parser.add_argument("--env", "-e", type=str, default='.bashrc', help="target env file")
 
@@ -186,7 +186,7 @@ def main():
         # config folder: .local of current user
         PREFIX = os.path.expanduser('~')
         if PREFIX[-1] != '/': PREFIX += '/'  # add a final / to path
-        PREFIX += '.local/.hermes/'
+        PREFIX += '.local/hermes/'
     
     else:
         # config folder: use custom prefix
@@ -355,3 +355,5 @@ def main():
     
     hprint.info('linking complete, refresh your shell')
     sys.exit(0)
+
+

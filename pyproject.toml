@@ -1,0 +1,33 @@
+#########################################################
+#   HERMES - telegram bot for messages & system control
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#  coder: Barone Francesco, last edit: 30 Aug 2023
+#--------------------------------------------------------
+
+[project]
+name = "hermes"
+version = "2.1.0"
+description = "Telegram Bot for messages & system control"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+  {name = "Francesco Barone", email = "baronefr@proton.me" }
+]
+
+requires-python = ">=3.5"
+
+
+[project.scripts]
+hermes = "hermes:__main__"
+hermes-setup = "hermes.setup:main"
+
+
+[options.packages.find]
+where = "src"
+
+
+[build-system]
+# These are the assumed default build requirements from pip:
+# https://pip.pypa.io/en/stable/reference/pip/#pep-517-and-518-support
+requires = ["setuptools>=43.0.0", "wheel"]
+build-backend = "setuptools.build_meta"

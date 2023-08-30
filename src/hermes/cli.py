@@ -1,8 +1,8 @@
 
 #########################################################
-#   HERMES - telegram bot for system control & notify
+#   HERMES - telegram bot for messages & system control
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 18 Feb 2022
+#  coder: Barone Francesco, last edit: 30 Aug 2023
 #--------------------------------------------------------
 
 import os
@@ -10,14 +10,18 @@ import sys
 import argparse
 import subprocess
 
-from hermes import env_key, __version__, credits, version, status
+from hermes import env_key, credits, version, status
 from hermes.common import namespace
 from hermes.common import hprint
 from hermes.bot.linguist import cli as mcli
 
-import hermes.bot as hbot
+from hermes.bot.main import bot as hbot
 
 
+
+###################
+#  some settings  #
+###################
 
 # some useful properties
 crop_command_len = 2   # max len of command to send in msg
@@ -26,8 +30,11 @@ addition_separator = "\n---\n"  # separator when appending output message
 
 
 
-def hook_message(msg : str, hook : str):
-    """Extract all the lines which have a custom flag from string msg."""
+def hook_message(msg : str, hook : str) -> str:
+    """
+    Given a message msg, extracts all the lines which have a flag ``hook``.
+    If `hook` is 'all', the full message is returned.
+    """
 
     if hook == 'all': # return the full message
         return msg
@@ -42,7 +49,7 @@ def hook_message(msg : str, hook : str):
 
 
 
-def execute_command(commands : list, hbot, users : list, msg : str = None, spawn_message = True, hook = None) -> None:
+def execute_command(commands : list, hbot, users : list, msg : str = None, spawn_message = True, hook = None) -> int:
     """Execute a command in a child process and send a message about its exit status."""
 
     proc = subprocess.Popen(
@@ -64,10 +71,12 @@ def execute_command(commands : list, hbot, users : list, msg : str = None, spawn
     pid = str(proc.pid)
     hprint.info("command PID : {}".format(pid), color='blue' )
 
+    # wait for process
     proc.wait()
     exit_code = proc.poll()
     output, error = proc.communicate()
 
+    # handle process output
     if exit_code == 0:
         hprint.info('process exit without error')
         stat = mcli.exe_ok.format(msg)
@@ -80,17 +89,24 @@ def execute_command(commands : list, hbot, users : list, msg : str = None, spawn
 
     addition = '' if addition == '' else addition_separator+addition
 
+    # send message to the users
     for userid in users:
         hbot.bot.send_message( userid, stat + addition )
 
-    sys.exit(exit_code) # return exit code of child process
+    sys.exit(exit_code) # returns exit code of child process
 
 
 
 
-
+###################
+#       CLI       #
+###################
 
 def main():
+    """
+    Hermes command line interface.
+    """
+
     print('>> hermes CLI')
 
     #---------------------------------
@@ -136,6 +152,7 @@ def main():
 
 
     if args.about:  # print the credits message
+        version()
         credits()
         sys.exit(0)
 
@@ -160,10 +177,11 @@ def main():
 
     # validate PREFIX: existence
     if not os.path.exists( PREFIX ):
-        hprint.err('target directory does not exist')
+        hprint.err(f'target directory ({PREFIX}) does not exist')
         sys.exit(1)
     
-    # validate PREFIX: check permissions
+    # validate PREFIX: check permissions 
+    #  TODO
 
 
 

@@ -1,7 +1,8 @@
+
 #########################################################
-#   HERMES - telegram bot for system control & notify
+#   HERMES - telegram bot for messages & system control
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 13 august 2022
+#  coder: Barone Francesco, last edit: 13 Aug 2022
 #--------------------------------------------------------
 
 import telebot

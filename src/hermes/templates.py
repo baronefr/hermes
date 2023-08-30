@@ -1,8 +1,8 @@
 
 #########################################################
-#   HERMES - telegram bot for system control & notify
+#   HERMES - telegram bot for messages & system control
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 22 Feb 2022
+#  coder: Barone Francesco, last edit: 30 Aug 2023
 #--------------------------------------------------------
 
 setup_template = """hostname={}
