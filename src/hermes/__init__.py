@@ -33,7 +33,7 @@ def status():
     """Print main info about the current installation."""
     print(' installation path: ', os.path.dirname(hermes.__file__)) #abspath
     print('  environ key name: ', env_key)
-    print(' this env variable: ', os.environ.get(env_key) )
+    print('          ∟>> ', os.environ.get(env_key) )
 
 def version():
     """Print current version."""

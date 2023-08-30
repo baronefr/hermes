@@ -130,6 +130,7 @@ parser.add_argument("--hook", "-k", type=str, default=namespace['CLI_HOOK'], hel
 
 # bot execution
 parser.add_argument("--server" , "-s", action="store_true", help="start bot server")
+parser.add_argument("--minimal-bot", action="store_true", help="do not initialize extra modules")
 parser.add_argument("--dry-run", "-d", action="store_true", help="start bot (oneshot mode)")
 
 # select users to whom the message will be sent
@@ -202,7 +203,7 @@ if not os.path.exists( PREFIX ):
 
 # setup the bot
 if VERB:  hprint.info( "loading bot module", color='blue')
-hb = hbot( override = PREFIX, external = False )
+hb = hbot( override = PREFIX, extra = False if args.minimal_bot else True )
 hprint.info( "checkpoint: bot module loaded", color='green')
 
 # run the bot server

@@ -24,14 +24,14 @@ class std:
     
     # help message, update with your commands
     help = """📢 Hello General Kenobi!\n
-    /toctoc    bot check
-    /about     dev credits
+    /toctoc \tbot check
+    /about  \tdev credits
               
-    /power     power management
-    /tasks     Hermes tasks
+    /power  \tpower management
+    /tasks  \tHermes tasks
     """
     
-    help_external = "/{} - {}\n"
+    help_external = "    /{} \t {}\n"
     
     unhandled_query = "unhandled query"
     unhandled_event = "unhandled event"

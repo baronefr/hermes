@@ -91,12 +91,12 @@ def make_auth(fname, setup) -> None:
         print(e)
         sys.exit(1)
 
-def make_external(fname) -> None:
+def make_extra(fname) -> None:
     """Write the external module template."""
 
     try:
         f = open( fname, "w")
-        f.write( external_template )
+        f.write( extra_template )
         f.close()
         
     except Exception as e:
@@ -309,9 +309,9 @@ def main():
     make_auth(PREFIX + namespace['AUTH_FILE'], this_setup)
     hprint.info("checkpoint: users file")
 
-    ### write external modules file
-    make_external(PREFIX + namespace['EXTERNAL_EXE'])
-    hprint.info("checkpoint: module file")
+    ### write extra modules file
+    make_extra(PREFIX + namespace['ONESHOTS'])
+    hprint.info("checkpoint: custom commands file")
 
     print("\nsetup completed\n")
 

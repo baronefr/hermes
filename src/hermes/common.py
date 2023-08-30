@@ -44,7 +44,7 @@ namespace = {
     'SETUP_FILE'     : 'setup.hermes',
     'SETTINGS_FILE'  : 'settings.cfg',
     'AUTH_FILE'      : 'users.key',
-    'EXTERNAL_EXE'   : 'external.py',
+    'ONESHOTS'       : 'oneshot.py',
     
     # bot log files
     'LOG_DIR'        : 'log/',  # dev: do not change this... there might be unmanaged references

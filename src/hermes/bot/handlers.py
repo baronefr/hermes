@@ -42,7 +42,7 @@ def make_help_external(eos = None, eqc= None) -> str:
     if eqc is not None:
         for command, pointer in eqc.items():
             etc += str( mstd.help_external.format(command, pointer.__doc__) )
-    return( ("\n ---------\n" + etc) if etc != '' else '')
+    return( ("  ---------\n" + etc) if etc != '' else '')
 
 
 class handlers():

@@ -19,6 +19,8 @@ from configparser import ExtendedInterpolation
 from importlib.machinery import SourceFileLoader
 from inspect import getmembers, isfunction, isclass
 
+from typing import Union
+
 from hermes.common import *
 
 from hermes.bot.logger import botlogger
@@ -27,30 +29,37 @@ from hermes.bot.linguist import std as mstd
 
 
 
-def parse_external_components(self, config, settings_file : str, PREFIX : str) -> None:
-    """Process the configuration of modules and external functions"""
+__null_strings = ['', '0', 'none']
+
+def parse_extra_components(self, config, settings_file : str, PREFIX : str) -> None:
+    """
+    Process the configuration of user defined functions and modules, along with bonjur application.
+
+    Args:
+        config (_type_): _description_
+        settings_file (str): _description_
+        PREFIX (str): _description_
+    """
+    external_oneshot = None
+    external_query = None
 
     if config.has_section('modules'):
         try:
             # external modules - oneshot commands
+            
             if config.has_option('modules', 'oneshot'):
-                external_oneshot = str( config['modules']['oneshot'] )
-                if external_oneshot.lower() in ['', '0', 'none']:   external_oneshot = None
-                else:
-                    external_oneshot = external_oneshot.replace(" ", "")   # remove spaces
+                tmp = str( config['modules']['oneshot'] ).lower()
+                if tmp not in __null_strings:
+                    external_oneshot = tmp.replace(" ", "")   # remove spaces
                     external_oneshot = external_oneshot.split(",")  # make list of modules
-            else:
-                external_oneshot = None
             
             # external modules - query commands
-            if config.has_option('modules', 'oneshot'):
-                external_query = str( config['modules']['query'] )
-                if external_query.lower() in ['', '0', 'none']:     external_query = None
-                else:
-                    external_query = external_query.replace(" ", "")       # remove spaces
+            if config.has_option('modules', 'query'):
+                tmp = str( config['modules']['query'] )
+                if tmp.lower() not in __null_strings:
+                    external_query = tmp.replace(" ", "")       # remove spaces
                     external_query = external_query.split(",")      # make list of modules
-            else:
-                external_query = None
+                
 
         except Exception as e:
             hprint.err('settings parsing error (optional), check file syntax')
@@ -60,49 +69,68 @@ def parse_external_components(self, config, settings_file : str, PREFIX : str) -
     
     else:
         # the settings file has no modules field, ignore
-        external_oneshot = None
-        external_query = None           
+        pass    
     
+
     ##    import extern modules  ----------------------
     self.ext_oneshot = {};       self.ext_query = {}; 
     self.bonjour_pointer = None
-    
-    if (external_oneshot is not None) or (external_query is not None):
-    
-        ext_exe = PREFIX + hermes.common.namespace['EXTERNAL_EXE']  # the custom .py file to look into
-        hprint.info('importing external modules from {}'.format(ext_exe), color='blue' )
-        
+
+    #  -> import oneshots
+    if (external_oneshot is not None):
         try:
+            # the custom .py file to look into
+            ext_exe = PREFIX + hermes.common.namespace['ONESHOTS']
+            hprint.info('importing custom functions from {}'.format(ext_exe), color='blue' )
+
             self.ext_module = SourceFileLoader("external", ext_exe).load_module()
             tmponeshot = getmembers(self.ext_module, isfunction)   # get a list of  (name, function pointer)
-            tmpquery   = getmembers(self.ext_module, isclass)      # get a list of  (name, class)
-            
+
         except Exception as e:
             hprint.err('external module error')
             print(' module file :', ext_exe)
             print(' error >> ', e)
             sys.exit(1)
-    
-    #  -> select oneshots
-    if (external_oneshot is not None):
+
         # selecting only the function listed in settings file
         for name, pointer in tmponeshot:
             if name in external_oneshot:
-                if name != 'bonjour':  self.ext_oneshot[name] = pointer
-                else: self.bonjour_pointer = pointer   # bonjour is handled separately
-                continue
+                if name == 'bonjour':
+                    self.bonjour_pointer = pointer   # bonjour is handled separately
+                else:
+                    self.ext_oneshot[name] = pointer
             else:
-                hprint.warn("external function \"{}\" is not listed in settings, skip".format(name) )
+                if name != 'bonjour': # avoid warning for bonjour
+                    hprint.warn("external function \"{}\" is not listed in settings, skip".format(name) )
     
-    #  -> select queries
-    if (external_query is not None):
-        # selecting only the function listed in settings file
-        for name, pointer in tmpquery:
-            if name in external_query:
-                self.ext_query[name] = pointer
-                continue
-            else:
-                hprint.warn("external class \"{}\" is not listed in settings, skip".format(name) )
+
+    #  -> import query classes
+    if external_query is not None:
+
+        for qname in external_query:
+
+            try:
+                # the custom .py file to look into
+                ext_exe = PREFIX + qname + '.py'
+                hprint.info('importing custom class from {}'.format(ext_exe), color='blue' )
+
+                self.ext_module = SourceFileLoader("external", ext_exe).load_module()
+                tmpquery = getmembers(self.ext_module, isclass)   # get a list of  (name, function pointer)
+
+                            # selecting only the class listed in settings file
+                for name, pointer in tmpquery:
+                    if name in external_query:
+                        self.ext_query[name] = pointer
+                        continue
+                    else:
+                        hprint.warn("external class \"{}\" is not listed in settings, skip".format(name) )
+
+            except Exception as e:
+                hprint.err('external query module error')
+                print(' module file :', ext_exe)
+                print(' error (non-fatal) >> ', e)
+
+
     
     # if still empty, disable it!
     if not self.ext_oneshot:  self.ext_oneshot = None
@@ -117,7 +145,15 @@ def parse_external_components(self, config, settings_file : str, PREFIX : str) -
 #
 class bot():
     
-    def __init__(self, override = None, info : bool = False, external : bool = True) -> None:
+    def __init__(self, override : Union[None,str] = None, info : bool = False, extra : bool = True) -> None:
+        """
+        Initialize the hermes bot object.
+
+        Args:
+            override (Union[None,str], optional): If None, the default policy to find the settings folder is used. Otherwise, a string pointing to a setup folder is expected. Defaults to None.
+            info (bool, optional): Print bot information when the object is initialized. Defaults to False.
+            extra (bool, optional): Load user defined components. Defaults to True.
+        """
         
         ##    housekeeping  -------------------------------
         
@@ -170,8 +206,8 @@ class bot():
 
         ### processing optional arguments
         # 1) external components
-        if external:
-            parse_external_components(self, config, settings_file, PREFIX)
+        if extra:
+            parse_extra_components(self, config, settings_file, PREFIX)
         else:
             self.ext_oneshot = None
             self.ext_query   = None

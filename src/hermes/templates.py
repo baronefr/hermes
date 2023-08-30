@@ -34,25 +34,22 @@ env_template = "\n# private hermes env\nexport {}=\"{}\"\n"
 
 
 
-external_template = """
+extra_template = """
 #########################################################
-#   HERMES - telegram bot for system control & notify
+#   HERMES - telegram bot for messages & system control
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 02 Oct 2022
+#  coder: Barone Francesco, last edit: 30 Aug 2023
 #--------------------------------------------------------
 
 
 #   -->  EXTERNAL FUNCTIONS -------------------------------
-#  This file allows you to easily create custom commands for the bot, which perform some
-#  actions on the systems and return a callback string. We distinguish between:
-#   - oneshot commands: send a message to the bot and get an answer
-#   - query: send a message, get a reply menu with many options & pick one
+#  This file allows you to easily create custom oneshot commands for the bot. A oneshot command is
+#  a function that can be executed and returns callback string, which is sent to the user.
 #
-#  Eventually you have to activate these functions in your settings.ini:
+#  Code here your function, then open your settings file and add the function with the oneshot flag:
 #  ........................
-#  [external]
-#  oneshot=bonjour,netstat
-#  query=rgb
+#  [modules]
+#  oneshot=bonjour,yourfunction
 #  ........................
 #
 
@@ -83,11 +80,6 @@ def netstat() -> str:
         print(' [err] netstat', err)
     return message
 
-
-
-##   QUERY ------------------------------------------------
-
-# To see a custom query implementation, look at lib/external.py
 """
 
 
