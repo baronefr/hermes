@@ -1,43 +1,77 @@
 
 #########################################################
-#   HERMES - telegram bot for system control & notify
+#   HERMES - telegram bot for messages & system control
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 12 August 2022
+#  coder: Barone Francesco, last edit: 30 Aug 2023
 #--------------------------------------------------------
 
 import os
 import csv
+from termcolor import colored
 
 import hermes
+
+
+
+class hprint:
+    """Class wrapper to print fancy colorful messages."""
+    def std(string : str, head : str = 'hermes', color : str = 'blue') -> None:
+        if head is not None: print('[', colored(head, color, attrs=['bold']), '] ', end = '')
+        print(string)
+
+    def err(string : str, head : str = 'error') -> None:
+        if head is not None: print('[', colored(head, 'red', attrs=['bold']), '] ', end = '')
+        print(string)
+
+    def warn(string : str, head : str = 'warning') -> None:
+        if head is not None: print('[', colored(head, 'yellow', attrs=['bold']), '] ', end = '')
+        print(string)
+
+    def info(string : str, head : str = 'info', color : str = 'green') -> None:
+        if head is not None: print('[', colored(head, color, attrs=['bold']), '] ', end = '')
+        print(string)
+
+    def append(string : str) -> None:
+        print('  ∟ ', string)
+
 
 #  DEFAULT NAMESPACE -----------------------------------------------
 #
 #   My advice is to not change these options...
 #
-namespace = { # configuration files
-              'SETUP_FILE'     : 'setup.hermes',
-              'SETTINGS_FILE'  : 'settings.ini',
-              'AUTH_FILE'      : 'users.key',
-              'LOG_DIR'        : 'log/',  # dev: do not change this... there might be unmanaged references
-              'EXTERNAL_EXE'   : 'external.py',
-              
-              # bot log files
-              'BLOG_UNAUTH'    : "unauth.log",       # log of all unauthorized users
-              'BLOG_AUTH_USER' : "user_{}.log",      # a log for each authorized user
-              'BLOG_REGISTER'  : "register.tmp",     # a register for user which ask for access
-              
-              # bot etc
-              'BLOG_HEAD'      : "Hermes Telegram bot - log file [{}]\n init: {}\n============================\n\n",
-              'LOG_TIMESTAMP'  : "%Y/%m/%d %H:%M:%S",
-              
-              # task files
-              'TASK_INDEX'     : 'tasks.list',
-              'TASK_PRIVATE'   : 'task_{}.log',
-              
-              # task etc
-              'TINDEX_HEAD'    : "Hermes Task - index file [{}]\n",
-              'TINDEX_FIELDS'  : "id,alias,pid,spawntime,status"
-            }
+namespace = {
+    # configuration files ------------
+    'SETUP_FILE'     : 'setup.hermes',
+    'SETTINGS_FILE'  : 'settings.cfg',
+    'AUTH_FILE'      : 'users.key',
+    'ONESHOTS'       : 'oneshot.py',
+    
+    # bot log files
+    'LOG_DIR'        : 'log/',  # dev: do not change this... there might be unmanaged references
+    'BLOG_UNAUTH'    : "unauth.log",       # log of all unauthorized users
+    'BLOG_AUTH_USER' : "user_{}.log",      # a log for each authorized user
+    'BLOG_REGISTER'  : "register.tmp",     # a register for user which ask for access
+    
+    # bot etc
+    'BLOG_HEAD'      : "Hermes Telegram bot - log file [{}]\n init: {}\n============================\n\n",
+    'LOG_TIMESTAMP'  : "%Y/%m/%d %H:%M:%S",
+    
+    # task files
+    'TASK_INDEX'     : 'tasks.list',
+    'TASK_PRIVATE'   : 'task_{}.log',
+    
+    # task etc
+    'TINDEX_HEAD'    : "Hermes Task - index file [{}]\n",
+    'TINDEX_FIELDS'  : "id,alias,pid,spawntime,status",
+
+    # cli
+    'CLI_HOOK' : "%HERMES%"
+}
+
+
+def hook_default() -> str:
+    """Returns the default CLI hook flag."""
+    return namespace['CLI_HOOK']
 
 
 bot_timeout = 30   # max age of messages to process [seconds]
@@ -76,26 +110,35 @@ def read_permissions(ufile):
     users_dict = {};  extra_dict = {};
     bonjour_list = []
     
-    try:
-        with open(ufile, mode='r') as auth_file:
-            auth_csv = csv.DictReader(auth_file)
-        
-            # process each record
-            for usr in auth_csv:
-                # converting types & parsing boolean values
-                usr['chatid'] = int(usr['chatid'])
-                usr['active']  = True if usr['active']  in ['true', 'True'] else False
-                usr['bonjour'] = True if usr['bonjour'] in ['true', 'True'] else False
-        
-                # skip users users marked as unactive
-                if not usr['active']: continue
-            
-                # dispatch
-                if usr['bonjour']: bonjour_list.append( usr['chatid'] )
-                users_dict[ usr['name'] ] = usr['chatid']
-                
+    try:   auth_file = open(ufile, mode='r')
     except Exception as err:
-        raise Exception('cannot open auth file ' + ufile)
+        raise Exception('cannot open user file ' + ufile)
+
+    try:
+        auth_csv = csv.DictReader(auth_file)
+    except Exception as err:
+        raise Exception('cannot read user file ' + ufile)
+
+
+    # process each record
+    for usr in auth_csv:
+        # converting types & parsing boolean values
+        try:
+            usr['chatid'] = int( usr['chatid'] )
+            usr['active']  = True if usr['active']  in ['true', 'True'] else False
+            usr['bonjour'] = True if usr['bonjour'] in ['true', 'True'] else False
+        except Exception as err:
+            print(' >>', err)
+            raise Exception("cannot parse user field, check file ({}) syntax".format(ufile))
+
+        # skip users users marked as unactive
+        if not usr['active']: continue
+    
+        # dispatch
+        if usr['bonjour']: bonjour_list.append( usr['chatid'] )
+        users_dict[ usr['name'] ] = usr['chatid']
+
+    auth_file.close()
         
     extra_dict[ 'bonjour' ] = bonjour_list 
     return users_dict, extra_dict
@@ -112,10 +155,10 @@ def index_access(ipath, ifile, time = '', autocreate = True) -> None:
     if autocreate: os.makedirs(ipath, exist_ok=True)
     if os.path.exists(ipath) is False:
         if autocreate:
-            raise Exception("[ERR] Task path does not exist and cannot be created.\n"
+            raise Exception("Task path does not exist and cannot be created.\n"
                     "Check if you have permission to create this folder.")
         else:
-            raise Exception("[ERR] Task path does not exist, autocreate = False.")
+            raise Exception("Task path does not exist, autocreate = False.")
     
     # create index, if not exist
     if os.path.isfile(ifile) is False:
@@ -124,12 +167,12 @@ def index_access(ipath, ifile, time = '', autocreate = True) -> None:
             with open(ifile, 'w') as f:
                 f.write( index_header.format( time ) )
         else:
-            raise Exception('[ERR] index does not exists, autocreate = False.')
+            raise Exception('index does not exists, autocreate = False.')
     
     # check if index is writable
     with open(ifile, 'a') as f:
         if f.writable() is False:
-            raise Exception('[ERR] index file is not writable')
+            raise Exception('index file is not writable')
 
 
 def index_get_tasks(ifile : str):
@@ -138,9 +181,9 @@ def index_get_tasks(ifile : str):
     #  Output:    - list of alive tasks (id)
     #             - list of closed tasks (id) (includes failed tasks)
     #             - dictionary with (key:id, alias)
-    alive_tasks = [];
-    closed_tasks = [];
-    alias_tasks = {};
+    alive_tasks = []; 
+    closed_tasks = []; 
+    alias_tasks = {}; 
     
     with open(ifile, mode='r') as tindex:
         next(tindex) # skip header

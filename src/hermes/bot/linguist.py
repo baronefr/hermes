@@ -1,8 +1,8 @@
 
 #########################################################
-#   HERMES - telegram bot for system control & notify
+#   HERMES - telegram bot for messages & system control
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 12 aug 2022
+#  coder: Barone Francesco, last edit: 12 Aug 2022
 #--------------------------------------------------------
 
 #  Default messages used by the bot. If you want to
@@ -24,14 +24,14 @@ class std:
     
     # help message, update with your commands
     help = """📢 Hello General Kenobi!\n
-    /toctoc    bot check
-    /about     dev credits
+    /toctoc \tbot check
+    /about  \tdev credits
               
-    /power     power management
-    /tasks     Hermes tasks
+    /power  \tpower management
+    /tasks  \tHermes tasks
     """
     
-    help_external = "/{} - {}\n"
+    help_external = "    /{} \t {}\n"
     
     unhandled_query = "unhandled query"
     unhandled_event = "unhandled event"
@@ -46,7 +46,7 @@ class task:
     
     # errors in query
     index_not_available = "⚠️ index file not available"
-    index_empty = "⚠️ index is empty"
+    index_empty = "🗑️ no tasks found, yet"
     task_query_error = "⭕️ task query error"
     
     # markup symbols
@@ -71,3 +71,9 @@ class power:
     action_poweroff = "🛑 poweroff"
     action_reboot = "🔆 reboot"
     action_status = "〽️ status"
+
+
+class cli:
+    notice = "\[cli] spawning cmd <{}>"
+    exe_error = "\[cli] {} 🚫 cmd quitted (error {})"
+    exe_ok = "\[cli] {} cmd ended ✅"

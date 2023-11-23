@@ -1,8 +1,8 @@
 
 #########################################################
-#   HERMES - telegram bot for system control & notify
+#   HERMES - telegram bot for messages & system control
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 12 aug 2022
+#  coder: Barone Francesco, last edit: 12 Aug 2022
 #--------------------------------------------------------
 
 #  Default messages used by the Task framework. If you want to

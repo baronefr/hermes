@@ -1,8 +1,8 @@
 
 #########################################################
-#   HERMES - telegram bot for system control & notify
+#   HERMES - telegram bot for messages & system control
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 12 August 2022
+#  coder: Barone Francesco, last edit: 12 Aug 2022
 #--------------------------------------------------------
 
 #  This class is the Task logger.
@@ -94,7 +94,7 @@ def index_touch(ifile: str, iid : str, new_entries : dict) -> None: # pattern, s
                 else: new_line = line
                 
                 new_file.write(new_line) 
-                
+    
     # copy file permissions
     copymode(ifile, abs_path)
     

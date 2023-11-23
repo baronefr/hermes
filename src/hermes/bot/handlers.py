@@ -1,7 +1,8 @@
+
 #########################################################
-#   HERMES - telegram bot for system control & notify
+#   HERMES - telegram bot for messages & system control
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 13 august 2022
+#  coder: Barone Francesco, last edit: 13 Aug 2022
 #--------------------------------------------------------
 
 import telebot
@@ -41,7 +42,7 @@ def make_help_external(eos = None, eqc= None) -> str:
     if eqc is not None:
         for command, pointer in eqc.items():
             etc += str( mstd.help_external.format(command, pointer.__doc__) )
-    return( ("\n ---------\n" + etc) if etc != '' else '')
+    return( ("  ---------\n" + etc) if etc != '' else '')
 
 
 class handlers():
