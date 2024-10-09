@@ -1,8 +1,6 @@
 
 #########################################################
-#   HERMES - telegram bot for messages & system control
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 12 Aug 2022
+#   HERMES - github.com/baronefr/hermes
 #--------------------------------------------------------
 
 #  Default messages used by the bot. If you want to
@@ -12,9 +10,8 @@
 class std:
     icon = "🖥️"
     
-    #hello = "Hello there!"
     # bonjour message
-    bonjour = icon + " *{}* is online"    # .format with hostname
+    bonjour = icon + " *{}* is online"    # arg: hostname
     
     unauthorized = "⛔️ you are not authorized"
     authorized = "already authorized"
@@ -31,7 +28,8 @@ class std:
     /tasks  \tHermes tasks
     """
     
-    help_external = "    /{} \t {}\n"
+    help_external_formatter = "    /{} \t {}\n"  # arg: commandname & description
+    help_external_separator = "\n"
     
     unhandled_query = "unhandled query"
     unhandled_event = "unhandled event"

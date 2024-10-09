@@ -1,8 +1,6 @@
 
 #########################################################
-#   HERMES - telegram bot for messages & system control
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 27 Jul 2022
+#   HERMES - github.com/baronefr/hermes
 #--------------------------------------------------------
 
 #  This class is the BOT logger.
@@ -10,7 +8,6 @@
 
 import os
 from datetime import datetime
-import stat
 
 from hermes.common import *
 

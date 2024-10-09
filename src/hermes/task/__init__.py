@@ -1,8 +1,6 @@
 
 #########################################################
-#   HERMES - telegram bot for messages & system control
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 27 Jul 2023
+#   HERMES - github.com/baronefr/hermes
 #--------------------------------------------------------
 
 import telebot
@@ -51,6 +49,7 @@ def failsafe(function):
     
 
 # time format used to save an image, if other names are not provided
+# TODO: maybe move this to a config file?
 PICTURE_TIME_FORMAT = "_%H-%M-%S"
 PICTURE_DEFAULT_EXT = '.png'
 
@@ -60,11 +59,16 @@ PICTURE_DEFAULT_EXT = '.png'
 # ------------------------------------------------------------------
 #  Task object -----------------------------------------------------
 #
-class task():
+class task:
     
     @failsafe
-    def __init__(self, settings = None, alias = None, user = 'default',
-                 logless = False, allquiet = False) -> None:
+    def __init__(self, 
+        settings : None | str = None, 
+        alias : None | str = None,
+        user : str | None | list = 'default',
+        logless : bool = False, 
+        allquiet : bool = False
+    ) -> None:
         
         
         ##    housekeeping  -------------------------------
@@ -122,9 +126,9 @@ class task():
         except Exception as err:
             raise Exception('bot init error') from err
         
-        # get the list of available users
+        # get the list of authorized users
         auth_users, _ = hermes.common.read_permissions(
-           PREFIX + hermes.common.namespace['AUTH_FILE']
+            PREFIX + hermes.common.namespace['AUTH_FILE']
         )
         
         # user handler
@@ -196,7 +200,7 @@ class task():
     
     # for public use (i.e. with failsafe & task alias included in message)
     @failsafe
-    def notify(self, txt = '', img = None, quiet = False) -> None:
+    def notify(self, txt : str = '', img : None | str = None, quiet : bool = False) -> None:
     
         # if img is a string, open the file
         try:
@@ -242,7 +246,7 @@ class task():
                 buf.close()
                 raise Exception('error in handling matplotlib object') from err
         
-        # TODO: add support for other libraries
+        # TODO: add support for other python plotting libraries?
         #   just add other if(...) here!
         
         else:
@@ -276,7 +280,7 @@ class task():
     
     # waypoint logger
     @failsafe
-    def waypoint(self, txt = None, timed = False, reset = False) -> None:
+    def waypoint(self, txt : str = None, timed : bool = False, reset : bool = False) -> None:
         
         # reset waypoint counter, if requested
         if reset: self.wpoint_count = 0
@@ -312,7 +316,7 @@ class task():
     
     # add an heartbeat in task log (with custom text)
     @failsafe
-    def heartbeat(self, txt = '') -> None:
+    def heartbeat(self, txt : str = '') -> None:
         if self.log is not None: self.log.record('heartbeat ' + str(txt) )
         
     
@@ -380,11 +384,13 @@ class task():
     # set the default time signature for plotify save (if no other name is provided)
     @failsafe
     def plotify_set_time_signature(self, new : str) -> None:
+        global PICTURE_TIME_FORMAT 
         PICTURE_TIME_FORMAT = new
     
     # set the default extension for plotify save
     @failsafe
     def plotify_set_ext(self, new : str) -> None:
+        global PICTURE_DEFAULT_EXT
         PICTURE_DEFAULT_EXT = new
 
 

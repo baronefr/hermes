@@ -1,8 +1,6 @@
 
 #########################################################
-#   HERMES - telegram bot for messages & system control
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 12 Aug 2022
+#   HERMES - github.com/baronefr/hermes
 #--------------------------------------------------------
 
 #  This class is the Task logger.
@@ -29,7 +27,7 @@ from hermes.common import *
 
 # random name generator
 RAND_ID_SIZE = 7    # size of the random id of the task, if no name is specified
-def get_random_id():
+def get_random_id() -> str:
     return ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(RAND_ID_SIZE))
 
 # log files placeholders
@@ -115,13 +113,13 @@ def index_touch(ifile: str, iid : str, new_entries : dict) -> None: # pattern, s
 #
 class tasklogger():
     
-    def __init__(self, path = None, alias = None) -> None:
+    def __init__(self, path = None, alias : None | str = None) -> None:
     
         # take the timing at function call
         now = datetime.now()
         
         # assign a random id (assume probabilities of conflict are null)
-        self.id = get_random_id()
+        self.id : str = get_random_id()
         
         if alias is None: alias = self.id
         

@@ -1,8 +1,6 @@
 
 #########################################################
-#   HERMES - telegram bot for messages & system control
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 30 Aug 2023
+#   HERMES - github.com/baronefr/hermes
 #--------------------------------------------------------
 
 
@@ -33,7 +31,7 @@ def status():
     """Print main info about the current installation."""
     print(' installation path: ', os.path.dirname(hermes.__file__)) #abspath
     print('  environ key name: ', env_key)
-    print('          ∟>> ', os.environ.get(env_key) )
+    print('          ∟> ', os.environ.get(env_key) )
 
 def version():
     """Print current version."""

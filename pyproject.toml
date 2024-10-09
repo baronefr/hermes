@@ -1,20 +1,20 @@
 #########################################################
-#   HERMES - telegram bot for messages & system control
+#   HERMES - github.com/baronefr/hermes
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 30 Aug 2023
+#  coder: Barone Francesco, last edit: 10 Oct 2024
 #--------------------------------------------------------
 
 [project]
 name = "hermes"
-version = "2.1.0"
-description = "Telegram Bot for messages & system control"
+version = "2.2.0"
+description = "Telegram bot for messages, task notifications & system management"
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [
-  {name = "Francesco Barone", email = "baronefr@proton.me" }
+  {name = "Francesco Barone", }
 ]
 
-requires-python = ">=3.5"
+requires-python = ">=3.8"
 
 
 [project.scripts]
