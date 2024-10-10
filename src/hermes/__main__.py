@@ -217,12 +217,12 @@ if not os.path.exists( PREFIX ):
 
 # setup the bot
 if VERB:  hprint.info( "loading bot module", color='blue')
-hb = hbot( override = PREFIX, extra = False if args.minimal_bot else True )
+hb = hbot( override = PREFIX )
 hprint.info( "checkpoint: bot module loaded", color='green')
 
 # run the bot server
 if args.server:
-    try:   hb.run()
+    try:   hb.run(load_extra = not args.minimal_bot )
     except Exception as err:
         hprint.err('server has stopped')
         print(err)
@@ -231,7 +231,7 @@ if args.server:
 
 # run the bot server for a oneshot test (bonjour)
 if args.dry_run:
-    try:   hb.run(dry_run = True)
+    try:   hb.run(load_extra = not args.minimal_bot, dry_run = True)
     except Exception as err:
         hprint.err('dry run has failed')
         print(err)

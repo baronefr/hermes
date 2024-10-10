@@ -12,6 +12,9 @@ from datetime import datetime
 from types import ModuleType
 import io
 
+from typing import BinaryIO
+from functools import wraps
+
 from hermes.common import *
 from hermes.task.logger import tasklogger
 from hermes.task.logger import get_random_id
@@ -38,6 +41,7 @@ def compute_dt_readable(diff):
 #    a decorator to catch all the exceptions
 #     -->  your code will continue in any case!
 def failsafe(function):
+    @wraps(function)
     def wrapper(*args, **kwargs):
         try:
             function(*args, **kwargs)
@@ -60,6 +64,9 @@ PICTURE_DEFAULT_EXT = '.png'
 #  Task object -----------------------------------------------------
 #
 class task:
+    """This class implements the Task functionalities of Hermes. 
+    The class is initialized with the settings provided in the Hermes configuration directory.
+    """
     
     @failsafe
     def __init__(self, 
@@ -69,6 +76,18 @@ class task:
         logless : bool = False, 
         allquiet : bool = False
     ) -> None:
+        """Create an Hermes Task.
+
+        Args:
+            settings (None | str, optional): If None, the bot will look at the environment to find the Hermes configuration. Otherwise, the user can provide a string with the path to an alternative Hermes configuration directory. Defaults to None.
+            alias (None | str, optional): Assign a custom alias to this Task. Defaults to None.
+            user (str | None | list, optional): Select which user will receive the messages from this Task. Defaults to 'default'.
+            logless (bool, optional): If True, disables the logging of this Task, therefore it will not be accessible through the Hermes bot server. Defaults to False.
+            allquiet (bool, optional): If True, all messages from this Task will be sent without notification. Defaults to False.
+
+        Raises:
+            Exception: Several, depending if the bot is able to initialize correctly.
+        """
         
         
         ##    housekeeping  -------------------------------
@@ -186,7 +205,14 @@ class task:
     #          quiet   if True, the message is sent without notification
     #
     #  Remark: if both txt and imgb are provided, the txt is sent as a caption
-    def __notify(self, txt = '', imgb = None, quiet = False) -> None:
+    def __notify(self, txt : str = '', imgb : None | BinaryIO = None, quiet = False) -> None:
+        """Send a message to the users selected by the bot. Only for internal use.
+
+        Args:
+            txt (str, optional): The message text to be sent by the bot. Defaults to ''.
+            imgb (None | BinaryIO, optional): If provided, we expect a BinaryIO buffer to read the image that will be sent by the Bot. Defaults to None.
+            quiet (bool, optional): If True, the message is sent without notification. Defaults to False.
+        """
     
         if self.__allquiet: quiet = True # override for soundless notifications
         
@@ -201,6 +227,16 @@ class task:
     # for public use (i.e. with failsafe & task alias included in message)
     @failsafe
     def notify(self, txt : str = '', img : None | str = None, quiet : bool = False) -> None:
+        """Send a notification to the users selected by the bot.
+
+        Args:
+            txt (str, optional): Text of the notification. Defaults to ''.
+            img (None | str, optional): A string referring to the picture to be sent in the message. Defaults to None.
+            quiet (bool, optional): If True, the message is sent without notification. Defaults to False.
+
+        Raises:
+            Exception: The image cannot be opened.
+        """
     
         # if img is a string, open the file
         try:
@@ -215,10 +251,25 @@ class task:
     
     @failsafe
     def plotify(self, module : ModuleType,
-                    txt = '', quiet = False,     # message arguments
-                    keep = False, show = False,  # handler arguments
-                    **kwargs) -> None:           # pass to module all other kwargs
-        
+                    txt : str = '', 
+                    quiet : bool = False,     # message arguments
+                    keep : bool | str = False, 
+                    show : bool = False,      # handler arguments
+                    **kwargs) -> None:        # pass to module all other kwargs
+        """Send a python plot to the users selected by the bot.
+
+        Args:
+            module (ModuleType): The module of the plot that you wish to send. Currently only matplotlib plots are supported.
+            txt (str, optional): Additional text to include in the message. Defaults to ''.
+            quiet (bool, optional): If True, the message is sent without notification. Defaults to False.
+            keep (bool | str, optional): If True, saves the plot as a file with the current timestamp. If a string is provided, then the name of the file is determined by the string. If False, the plot is not saved to a file. Defaults to False.
+            show (bool, optional): If True, asks the plot module to show the picture. Defaults to False.
+
+        The kwargs are sent to the plotting module.
+
+        Raises:
+            Exception: Plot module not supported. Please use only matplotlib.pyplot plots.
+        """
         # check input module
         try:
             if isinstance(module, ModuleType):
@@ -281,7 +332,16 @@ class task:
     # waypoint logger
     @failsafe
     def waypoint(self, txt : str = None, timed : bool = False, reset : bool = False) -> None:
-        
+        """Create a waypoint and send a message to the user when it is reached.
+
+        Args:
+            txt (str, optional): Text to attach to the waypoint notification. Defaults to None.
+            timed (bool, optional): Include in the message the time since the previous waypoint. Defaults to False.
+            reset (bool, optional): If True, the waypoint counter is reset to zero. Defaults to False.
+
+        Raises:
+            Exception: The message cannot be delivered, or the internal logger is failing.
+        """
         # reset waypoint counter, if requested
         if reset: self.wpoint_count = 0
         
@@ -333,7 +393,12 @@ class task:
     #            - any other case:  just mark the task as failed
     #
     @failsafe
-    def close(self, fail = None):
+    def close(self, fail : None | str = None) -> None:
+        """Closes an Hermes Task.
+
+        Args:
+            fail (None | str, optional): If a string is provided, the Task is closed with a failed flag and the message in this variable is attached to the notification. Defaults to None.
+        """
         
         if fail is None:
             log = 'closed'
@@ -343,7 +408,7 @@ class task:
             msg = mstd.failed_msg.format(self.alias, fail)          
         else:
             log = 'failed'
-            msg = mstd.failed.format(self.alias, fail)
+            msg = mstd.failed.format(self.alias)
         
         if self.log is not None:  
             self.log.record( log )
@@ -361,13 +426,20 @@ class task:
     
     # reset the waypoint counter
     @failsafe
-    def wpclear(self) -> None:
+    def waypoint_reset_counter(self) -> None:
+        """Resets the waypoint counter.
+        """
         self.wpoint_count = 0
     
     # manually set allquiet mode
     @failsafe
-    def set_allquiet(self, new : bool) -> None:
-        self.__allquiet = new
+    def set_allquiet(self, allquiet : bool) -> None:
+        """Set the allquiet option of this Task object.
+
+        Args:
+            allquiet (bool): If True, the Task object will send messages without notification sound.
+        """
+        self.__allquiet = allquiet
     
     # tell if operating in logless mode
     @failsafe
@@ -378,8 +450,12 @@ class task:
     # tell if allquiet mode is enabled
     @failsafe
     def is_allquiet(self) -> bool:
-        if self.__allquiet: return True
-        else:                return False
+        """Returns the current value of the quiet property for this Task object.
+
+        Returns:
+            bool: Current value of the allquiet property for this Task object.
+        """
+        return self.__allquiet
     
     # set the default time signature for plotify save (if no other name is provided)
     @failsafe

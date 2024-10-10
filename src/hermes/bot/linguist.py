@@ -8,6 +8,8 @@
 
 
 class std:
+    """Hermes Bot standard messages. English language."""
+
     icon = "🖥️"
     
     # bonjour message
@@ -38,7 +40,8 @@ class std:
 
 
 class task:
-    
+    """Hermes Bot default messages for the Task integration. English language."""
+
     # header of the task index query
     markup_header = " TASKS ---------\n"
     
@@ -62,6 +65,8 @@ class task:
 
 
 class power:
+    """Hermes Bot default messages for the power management commands. English language."""
+    
     icon = "🔋"
     
     markup_title = icon + ' power options'
@@ -72,6 +77,8 @@ class power:
 
 
 class cli:
+    """Hermes Bot default messages for the CLI interface. English language."""
+
     notice = "\[cli] spawning cmd <{}>"
     exe_error = "\[cli] {} 🚫 cmd quitted (error {})"
     exe_ok = "\[cli] {} cmd ended ✅"

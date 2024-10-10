@@ -39,9 +39,8 @@ def version():
 
 def credits():
     """Acknowledge the author. Thanks!"""
-    print('hermes | library for system control & notifications')
     print('')
+    print('hermes | Telegram bot for messages, task notifications & system management.')
     print(' ver : ', __version__, '(rev {})'.format(__major_review__) )
-    print('')
     print(' dev: F.P. Barone - github.com/baronefr')
     

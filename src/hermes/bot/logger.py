@@ -41,8 +41,19 @@ def entry_head():
 #  This class handles the logging for Hermes Bot.
 #
 class botlogger():
+    """Logger class used by the Hermes Bot.
+    """
     
-    def __init__(self, path, autocreate = True) -> None:
+    def __init__(self, path : str, autocreate : bool = True) -> None:
+        """Initialize the logger object.
+
+        Args:
+            path (str): Path to the log directory.
+            autocreate (bool, optional): If the directory does not exist, create it. Defaults to True.
+
+        Raises:
+            Exception: log dir does not exist, but autocreate is disabled.
+        """
     
         now = datetime.now()
         self.path = path
@@ -67,6 +78,12 @@ class botlogger():
     
     # add a message to the NOT authorized users log
     def unauth(self, text : str, chatid : int) -> None:
+        """Append a message to the unauthorized users log. All the unauthorized users share the same log file.
+
+        Args:
+            text (str): Text to append.
+            chatid (int): ChatId of the unauthorized user.
+        """
         this_file = self.path + UNAUTH_LOG
         with open(this_file, "a") as this_log:
             this_log.write(entry_head() + f"[{chatid}] " + text + "\n")
@@ -74,6 +91,12 @@ class botlogger():
     
     # add a message to the authorized user log
     def auth(self, text : str, chatid : int) -> None:
+        """Append a message to the authorized users log. Each user has its own log file.
+
+        Args:
+            text (str): Text to append.
+            chatid (int): ChatId of the authorized user.
+        """
         this_file = self.path + AUTH_USER_LOG.format(str(chatid))
         with open(this_file, "a") as this_log:
             this_log.write(entry_head() + text + "\n")
@@ -86,7 +109,12 @@ class botlogger():
     # check if register is available
     #  Returns:    None  if it is not available
     #              str   (path to register) if available
-    def check_register(self):
+    def check_register(self) -> str | None:
+        """check if register is available
+
+        Returns:
+            str | None: If it is a string, returns the path (existing) to the register file. Otherwise, the register does not exist and the function returns None.
+        """
         this_pipe = self.path + REGISTER_PIPE
         
         # check if register is available

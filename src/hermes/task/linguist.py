@@ -8,10 +8,12 @@
 
 
 class std:
+    """Hermes Task standard messages. English language."""
+
     init = "👌🏻 Task {} has spawned"
     
     waypoint = "🚀 [{}]\n waypoint #{}"
     
     failed = "📛 Task {} has failed"
-    failed_msg = failed + "\n err: [{}]"
+    failed_msg = failed + "\n--\n{}"
     closed = "♨️ Task {} has been closed"

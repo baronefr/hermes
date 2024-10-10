@@ -12,8 +12,6 @@ from configparser import ExtendedInterpolation
 from importlib.machinery import SourceFileLoader
 from inspect import getmembers, isfunction, isclass
 
-from typing import Union
-
 from hermes.common import *
 
 from hermes.bot.logger import botlogger
@@ -24,15 +22,8 @@ from hermes.bot.linguist import std as mstd
 
 __null_strings = ['', '0', 'none']
 
-def parse_extra_components(self, config, settings_file : str, PREFIX : str) -> None:
-    """
-    Process the configuration of user defined functions and modules, along with bonjur application.
-
-    Args:
-        config (_type_): _description_
-        settings_file (str): _description_
-        PREFIX (str): _description_
-    """
+# Process the configuration of user defined functions and modules, along with bonjur application.
+def parse_extra_components(self, config : configparser.ConfigParser, settings_file : str, PREFIX : str) -> None:
     external_oneshot = None
     external_query = None
 
@@ -61,7 +52,7 @@ def parse_extra_components(self, config, settings_file : str, PREFIX : str) -> N
     
     else:
         # the settings file has no modules field, ignore
-        pass    
+        hprint.info('no modules field in settings file')
     
 
     ##    import extern modules  ----------------------
@@ -134,18 +125,21 @@ def parse_extra_components(self, config, settings_file : str, PREFIX : str) -> N
 # ------------------------------------------------------------------
 #  Bot object ------------------------------------------------------
 #
-class bot():
+class bot:
+    """This class implements the Telegram bot functionalities of Hermes. 
+    The class is initialized with the settings provided in the Hermes configuration directory.
+    """
     
-    def __init__(self, override : Union[None,str] = None, info : bool = False, extra : bool = True) -> None:
-        """
-        Initialize the hermes bot object.
+    def __init__(self, override : None|str = None, print_info : bool = False) -> None:
+        """Initialize the Hermes Telegram bot object.
 
         Args:
-            override (Union[None,str], optional): If None, the default policy to find the settings folder is used. Otherwise, a string pointing to a setup folder is expected. Defaults to None.
-            info (bool, optional): Print bot information when the object is initialized. Defaults to False.
-            extra (bool, optional): Load user defined components. Defaults to True.
+            override (None | str, optional): If None, the bot will look at the environment to find the Hermes configuration. Otherwise, the user can provide a string with the path to an alternative Hermes configuration directory. Defaults to None.
+            print_info (bool, optional): If true, prints a short recap of the Hermes bot settings at the end of the initialization. Defaults to False.
+
+        Raises:
+            Exception: several exceptions, depending on the failure during the initialization of the bot component.
         """
-        
         ##    housekeeping  -------------------------------
         
         # if argument is not valid, override settings dir with default policy rule
@@ -195,13 +189,10 @@ class bot():
         
 
         ### processing optional arguments
-        # 1) external components
-        if extra:
-            parse_extra_components(self, config, settings_file, PREFIX)
-        else:
-            self.ext_oneshot = None
-            self.ext_query   = None
-            self.bonjour_pointer = None
+        # 1) NOTE: since 2.2.0 the external components are loaded in the run() function
+        self.__config = config
+        self.__settings_file = settings_file
+        self.__PREFIX = PREFIX
 
         # 2) authorized users file
         self.auth_users, self.extra_lists = hermes.common.read_permissions(
@@ -227,7 +218,7 @@ class bot():
         
         
         # print info if requested
-        if info:
+        if print_info:
             print(' [Hermes] config info:')
             print('hostname   >', self.hostname)
             print('bot token  >', MYTOKEN)
@@ -237,8 +228,27 @@ class bot():
 
     
     # start the bot infinity_polling
-    def run(self, bonjour : bool = True, dry_run : bool = False, init_task : bool = True) -> None:
+    def run(self, load_extra : bool = True, bonjour : bool = True, dry_run : bool = False, init_task : bool = True) -> None:
+        """Run the server bot, polling messages from the Telegram bot and executing commands.
+
+        Args:
+            load_extra (bool, optional): Load extra modules of Hermes, which will be available as commands when the bot server is running. Defaults to True.
+            bonjour (bool, optional): Send a bonjour message to the active users when the bot is up and running. Defaults to True.
+            dry_run (bool, optional): Execute all the preliminary steps of the bot server setup, but eventually do not run the infinity polling. Defaults to False.
+            init_task (bool, optional): Initialize the Tasks functionalities of the bot. Defaults to True.
+
+        Raises:
+            Exception: Several, depending
+        """
         
+        # 1) loading external components
+        if load_extra:
+            parse_extra_components(self, self.__config, self.__settings_file, self.__PREFIX)
+        else:
+            self.ext_oneshot = None
+            self.ext_query   = None
+            self.bonjour_pointer = None
+
         # init the function handler class
         hf = handlers(self, oneshot = self.ext_oneshot, query = self.ext_query)
         
