@@ -11,7 +11,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "botHermes"
-version = "2.2.0-1"
+version = "2.2.0-2"
 description = "Telegram bot for messages, task notifications & system management"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -32,7 +32,8 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/baronefr/hermes"
 Issues = "https://github.com/baronefr/hermes/issues"
-Documentation = "https://hermes-bot.readthedocs.io/en/latest/"
+Repository = "https://github.com/baronefr/hermes"
+Documentation = "https://bothermes.readthedocs.io"
 
 [project.scripts]
 hermes = "hermes:__main__"
