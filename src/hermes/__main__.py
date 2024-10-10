@@ -218,7 +218,7 @@ if not os.path.exists( PREFIX ):
 # setup the bot
 if VERB:  hprint.info( "loading bot module", color='blue')
 hb = hbot( override = PREFIX )
-hprint.info( "checkpoint: bot module loaded", color='green')
+if VERB: hprint.info( "checkpoint: bot module loaded", color='green')
 
 # run the bot server
 if args.server:
