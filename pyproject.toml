@@ -11,15 +11,27 @@ description = "Telegram bot for messages, task notifications & system management
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [
-  {name = "Francesco Barone", }
+  {name = "Francesco Barone"}
+]
+dependencies = [
+  "pyTelegramBotAPI",
+  "termcolor"
 ]
 
-requires-python = ">=3.8"
 
+requires-python = ">=3.8"
+classifiers = [
+    "Operating System :: POSIX :: Linux",
+]
 
 [project.scripts]
 hermes = "hermes:__main__"
 hermes-setup = "hermes.setup:main"
+
+
+[project.urls]
+Homepage = "https://github.com/baronefr/hermes"
+Issues = "https://github.com/baronefr/hermes/issues"
 
 
 [options.packages.find]
