@@ -4,6 +4,11 @@
 #  coder: Barone Francesco, last edit: 10 Oct 2024
 #--------------------------------------------------------
 
+# Choosing a build backend:
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "botHermes"
 version = "2.2.0"
@@ -18,25 +23,16 @@ dependencies = [
   "termcolor"
 ]
 
-
 requires-python = ">=3.8"
 classifiers = [
-    "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Operating System :: POSIX :: Linux",
 ]
 
 [project.urls]
 Homepage = "https://github.com/baronefr/hermes"
 Issues = "https://github.com/baronefr/hermes/issues"
 Documentation = "https://hermes-bot.readthedocs.io/en/latest/"
-
-[build-system]
-# These are the assumed default build requirements from pip:
-# https://pip.pypa.io/en/stable/reference/pip/#pep-517-and-518-support
-requires = ["setuptools>=43.0.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools.package-dir]
-hermes = "src/hermes"
 
 [project.scripts]
 hermes = "hermes:__main__"
