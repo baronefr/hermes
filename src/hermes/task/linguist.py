@@ -1,8 +1,6 @@
 
 #########################################################
-#   HERMES - telegram bot for messages & system control
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 12 Aug 2022
+#   HERMES - github.com/baronefr/hermes
 #--------------------------------------------------------
 
 #  Default messages used by the Task framework. If you want to
@@ -10,10 +8,12 @@
 
 
 class std:
+    """Hermes Task standard messages. English language."""
+
     init = "👌🏻 Task {} has spawned"
     
     waypoint = "🚀 [{}]\n waypoint #{}"
     
     failed = "📛 Task {} has failed"
-    failed_msg = failed + "\n err: [{}]"
+    failed_msg = failed + "\n--\n{}"
     closed = "♨️ Task {} has been closed"

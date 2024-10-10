@@ -3,9 +3,7 @@ Hermes command line interface.
 """
 
 #########################################################
-#   HERMES - telegram bot for messages & system control
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 30 Aug 2023
+#   HERMES - github.com/baronefr/hermes
 #--------------------------------------------------------
 
 
@@ -32,7 +30,9 @@ crop_command_len = 2   # max len of command to send in msg
 addition_separator = "\n---\n"  # separator when appending output message
 
 
-
+###################
+#  some utilities #
+###################
 
 def hook_message(msg : str, hook : str) -> str:
     """
@@ -106,10 +106,7 @@ def execute_command(commands : list, hbot, users : list, msg : str = None, spawn
 #       CLI       #
 ###################
 
-
-
-
-print('>> hermes CLI')
+print('>> Hermes CLI')
 
 #---------------------------------
 #              ARGS
@@ -139,7 +136,7 @@ parser.add_argument("--user", "-u", type=str, default='all', help="select users 
 # informative commands
 parser.add_argument("--list-users", "-l", action="store_true", help="list available users")
 parser.add_argument("--check", "-c", action="store_true", help="check installation status")
-#parser.add_argument("--tasks", "-t", action="store_true", help="list tasks")       # TODO in next release
+#parser.add_argument("--tasks", "-t", action="store_true", help="list tasks")   # TODO in next release
 
 # advanced options
 parser.add_argument("--override", "-o", type=str, default=None, help="override environment link")
@@ -154,14 +151,31 @@ VERB : bool = args.verbose  # additional verbosity (true or false)
 if VERB: print('cli args :', args)
 
 
+# the script proceeds through the following exit points:
+# e)  send about
+# e)  send check
+# *     initialize bot object
+# e)  start bot server
+# e)  dry run initialization
+# e)  list available users
+# *     select a target user for next steps
+# e)  execute a command
+# e)  send an image
+# e)  send a file
+# e)  send a text message
+
+
+
 if args.about:  # print the credits message
     version()
     credits()
     sys.exit(0)
 
-if args.check:
+if args.check:  # check the environment/installation status
     status()
     sys.exit(0)
+
+
 
 #---------------------------------
 #          ENV CHECKING
@@ -203,12 +217,12 @@ if not os.path.exists( PREFIX ):
 
 # setup the bot
 if VERB:  hprint.info( "loading bot module", color='blue')
-hb = hbot( override = PREFIX, extra = False if args.minimal_bot else True )
-hprint.info( "checkpoint: bot module loaded", color='green')
+hb = hbot( override = PREFIX )
+if VERB: hprint.info( "checkpoint: bot module loaded", color='green')
 
 # run the bot server
 if args.server:
-    try:   hb.run()
+    try:   hb.run(load_extra = not args.minimal_bot )
     except Exception as err:
         hprint.err('server has stopped')
         print(err)
@@ -217,7 +231,7 @@ if args.server:
 
 # run the bot server for a oneshot test (bonjour)
 if args.dry_run:
-    try:   hb.run(dry_run = True)
+    try:   hb.run(load_extra = not args.minimal_bot, dry_run = True)
     except Exception as err:
         hprint.err('dry run has failed')
         print(err)
@@ -350,5 +364,5 @@ if args.msg is not None:
 
 # if you see this, it means the program has not stopped previously
 #  (which is exactly what I want to happen...)
-hprint.warn('is there nothing for me to do?')
+hprint.warn('is there anything for me to do?')
 sys.exit(0)

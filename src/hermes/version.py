@@ -1,4 +1,4 @@
-__version__ = '2.1.0'
-__major_review__ = '30 Aug 2023'
+__version__ = '2.2.0'
+__major_review__ = '10 Oct 2024'
 
 # note: edit the .toml file too!

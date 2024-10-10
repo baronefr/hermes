@@ -1,8 +1,6 @@
 
 #########################################################
-#   HERMES - telegram bot for messages & system control
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 12 Aug 2022
+#   HERMES - github.com/baronefr/hermes
 #--------------------------------------------------------
 
 #  Default messages used by the bot. If you want to
@@ -10,11 +8,12 @@
 
 
 class std:
+    """Hermes Bot standard messages. English language."""
+
     icon = "🖥️"
     
-    #hello = "Hello there!"
     # bonjour message
-    bonjour = icon + " *{}* is online"    # .format with hostname
+    bonjour = icon + " *{}* is online"    # arg: hostname
     
     unauthorized = "⛔️ you are not authorized"
     authorized = "already authorized"
@@ -31,7 +30,8 @@ class std:
     /tasks  \tHermes tasks
     """
     
-    help_external = "    /{} \t {}\n"
+    help_external_formatter = "    /{} \t {}\n"  # arg: commandname & description
+    help_external_separator = "\n"
     
     unhandled_query = "unhandled query"
     unhandled_event = "unhandled event"
@@ -40,7 +40,8 @@ class std:
 
 
 class task:
-    
+    """Hermes Bot default messages for the Task integration. English language."""
+
     # header of the task index query
     markup_header = " TASKS ---------\n"
     
@@ -64,6 +65,8 @@ class task:
 
 
 class power:
+    """Hermes Bot default messages for the power management commands. English language."""
+    
     icon = "🔋"
     
     markup_title = icon + ' power options'
@@ -74,6 +77,8 @@ class power:
 
 
 class cli:
+    """Hermes Bot default messages for the CLI interface. English language."""
+
     notice = "\[cli] spawning cmd <{}>"
     exe_error = "\[cli] {} 🚫 cmd quitted (error {})"
     exe_ok = "\[cli] {} cmd ended ✅"

@@ -1,8 +1,6 @@
 
 #########################################################
-#   HERMES - telegram bot for messages & system control
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 30 Aug 2023
+#   HERMES - github.com/baronefr/hermes
 #--------------------------------------------------------
 
 import os
@@ -103,7 +101,7 @@ def settings_default_policy():
 #  
 #  This function reads the user permission file.
 #
-#  Returns:    - dictionary of (key : USER_NAME, CHAT_ID)
+#  Returns:    - dictionary of (key : USER_NAME, value : CHAT_ID)
 #              - dictionary of special lists (bonjour, ...)
 #
 def read_permissions(ufile):

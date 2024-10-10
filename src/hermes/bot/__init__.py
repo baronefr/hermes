@@ -1,25 +1,16 @@
 
 #########################################################
-#   HERMES - telegram bot for messages & system control
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 27 Jul 2022
+#   HERMES - github.com/baronefr/hermes
 #--------------------------------------------------------
-
-#from hermes.bot.main import bot as bot
-
-
 
 import telebot
 
 import os
-import sys
 from datetime import datetime
 import configparser
 from configparser import ExtendedInterpolation
 from importlib.machinery import SourceFileLoader
 from inspect import getmembers, isfunction, isclass
-
-from typing import Union
 
 from hermes.common import *
 
@@ -31,15 +22,8 @@ from hermes.bot.linguist import std as mstd
 
 __null_strings = ['', '0', 'none']
 
-def parse_extra_components(self, config, settings_file : str, PREFIX : str) -> None:
-    """
-    Process the configuration of user defined functions and modules, along with bonjur application.
-
-    Args:
-        config (_type_): _description_
-        settings_file (str): _description_
-        PREFIX (str): _description_
-    """
+# Process the configuration of user defined functions and modules, along with bonjur application.
+def parse_extra_components(self, config : configparser.ConfigParser, settings_file : str, PREFIX : str) -> None:
     external_oneshot = None
     external_query = None
 
@@ -61,15 +45,14 @@ def parse_extra_components(self, config, settings_file : str, PREFIX : str) -> N
                     external_query = external_query.split(",")      # make list of modules
                 
 
-        except Exception as e:
+        except Exception as err:
             hprint.err('settings parsing error (optional), check file syntax')
             print(' settings file :', settings_file)
-            print(' parse error >> ', e)
-            sys.exit(1)
+            raise Exception('settings parsing error in extra components') from err
     
     else:
         # the settings file has no modules field, ignore
-        pass    
+        hprint.info('no modules field in settings file')
     
 
     ##    import extern modules  ----------------------
@@ -86,11 +69,10 @@ def parse_extra_components(self, config, settings_file : str, PREFIX : str) -> N
             self.ext_module = SourceFileLoader("external", ext_exe).load_module()
             tmponeshot = getmembers(self.ext_module, isfunction)   # get a list of  (name, function pointer)
 
-        except Exception as e:
+        except Exception as err:
             hprint.err('external module error')
             print(' module file :', ext_exe)
-            print(' error >> ', e)
-            sys.exit(1)
+            raise Exception('error loading external module') from err
 
         # selecting only the function listed in settings file
         for name, pointer in tmponeshot:
@@ -143,18 +125,21 @@ def parse_extra_components(self, config, settings_file : str, PREFIX : str) -> N
 # ------------------------------------------------------------------
 #  Bot object ------------------------------------------------------
 #
-class bot():
+class bot:
+    """This class implements the Telegram bot functionalities of Hermes. 
+    The class is initialized with the settings provided in the Hermes configuration directory.
+    """
     
-    def __init__(self, override : Union[None,str] = None, info : bool = False, extra : bool = True) -> None:
-        """
-        Initialize the hermes bot object.
+    def __init__(self, override : None|str = None, print_info : bool = False) -> None:
+        """Initialize the Hermes Telegram bot object.
 
         Args:
-            override (Union[None,str], optional): If None, the default policy to find the settings folder is used. Otherwise, a string pointing to a setup folder is expected. Defaults to None.
-            info (bool, optional): Print bot information when the object is initialized. Defaults to False.
-            extra (bool, optional): Load user defined components. Defaults to True.
+            override (None | str, optional): If None, the bot will look at the environment to find the Hermes configuration. Otherwise, the user can provide a string with the path to an alternative Hermes configuration directory. Defaults to None.
+            print_info (bool, optional): If true, prints a short recap of the Hermes bot settings at the end of the initialization. Defaults to False.
+
+        Raises:
+            Exception: several exceptions, depending on the failure during the initialization of the bot component.
         """
-        
         ##    housekeeping  -------------------------------
         
         # if argument is not valid, override settings dir with default policy rule
@@ -166,13 +151,13 @@ class bot():
         if not os.path.isdir(PREFIX):
             hprint.err('settings path does not exist or it is not accessible')
             hprint.append("target dir {}".format(PREFIX))
-            sys.exit(1)
+            raise Exception('settings path error')
             
         settings_file = PREFIX + hermes.common.namespace['SETTINGS_FILE']
         if not os.path.isfile(settings_file):
             hprint.err('settings file does not exist or it is not accessible')
             hprint.append("settings file : {}".format(settings_file) )
-            sys.exit(1)
+            raise Exception('settings file error')
         
         
         
@@ -197,44 +182,43 @@ class bot():
             # task path
             self.task_path = str( config['task']['task_path'] )
             
-        except Exception as e:
+        except Exception as err:
             hprint.err('settings parsing error, check file syntax')
             print(' settings file :', settings_file)
-            print(' parse error >> ', e)
-            sys.exit(1)
+            raise Exception('settings parsing error') from err
         
 
         ### processing optional arguments
-        # 1) external components
-        if extra:
-            parse_extra_components(self, config, settings_file, PREFIX)
-        else:
-            self.ext_oneshot = None
-            self.ext_query   = None
-            self.bonjour_pointer = None
+        # 1) NOTE: since 2.2.0 the external components are loaded in the run() function
+        self.__config = config
+        self.__settings_file = settings_file
+        self.__PREFIX = PREFIX
 
         # 2) authorized users file
         self.auth_users, self.extra_lists = hermes.common.read_permissions(
             PREFIX + hermes.common.namespace['AUTH_FILE']
         )
+        # NOTE:
+        #  self.auth_users is a dictionary ~ (key : USER_NAME, value : CHAT_ID)
+        #  self.extra_lists is a dictionary of special lists (bonjour, ...)
         
         
         ##    init companion modules  ----------------------------
         
         # init the bot & logger object
         try:   self.bot = telebot.TeleBot(MYTOKEN, parse_mode='Markdown')
-        except Exception as e:
-            hprint.err('bot init error');  print(e); 
-            sys.exit(1)
+        except Exception as err:
+            hprint.err('bot init error')
+            raise Exception('bot init error') from err
         
         try:   self.log = botlogger(path = PREFIX + hermes.common.namespace['LOG_DIR'])
-        except Exception as e:
-            hprint.err('logger init error');  print(e); 
-            sys.exit(1)
+        except Exception as err:
+            hprint.err('logger init error')
+            raise Exception('log init error') from err
         
         
         # print info if requested
-        if info:
+        if print_info:
             print(' [Hermes] config info:')
             print('hostname   >', self.hostname)
             print('bot token  >', MYTOKEN)
@@ -243,9 +227,28 @@ class bot():
     
 
     
-    # start the bot
-    def run(self, bonjour = True, dry_run = False, init_task : bool = True) -> None:
+    # start the bot infinity_polling
+    def run(self, load_extra : bool = True, bonjour : bool = True, dry_run : bool = False, init_task : bool = True) -> None:
+        """Run the server bot, polling messages from the Telegram bot and executing commands.
+
+        Args:
+            load_extra (bool, optional): Load extra modules of Hermes, which will be available as commands when the bot server is running. Defaults to True.
+            bonjour (bool, optional): Send a bonjour message to the active users when the bot is up and running. Defaults to True.
+            dry_run (bool, optional): Execute all the preliminary steps of the bot server setup, but eventually do not run the infinity polling. Defaults to False.
+            init_task (bool, optional): Initialize the Tasks functionalities of the bot. Defaults to True.
+
+        Raises:
+            Exception: Several, depending
+        """
         
+        # 1) loading external components
+        if load_extra:
+            parse_extra_components(self, self.__config, self.__settings_file, self.__PREFIX)
+        else:
+            self.ext_oneshot = None
+            self.ext_query   = None
+            self.bonjour_pointer = None
+
         # init the function handler class
         hf = handlers(self, oneshot = self.ext_oneshot, query = self.ext_query)
         
@@ -284,7 +287,7 @@ class bot():
         if self.ext_query is not None:
             self.bot.message_handler(commands=list(self.ext_query.keys()) )( hf.query )
         
-        # query handler (default + external)
+        # query callback handler (default + external)
         self.bot.callback_query_handler(func=lambda c:True)( hf.handler_events )
         
         # this has to be placed as final entry, to handle unmatched commands
@@ -307,25 +310,25 @@ class bot():
         # connect to telegram bot
         try: print("connected to @" + self.bot.get_me().username, "as", self.hostname)
         except Exception as err:
-            sys.exit(f" [!] bot connection has failed!\n{err}")
+            raise Exception('bot connection has failed') from err
         
         # send bonjour msg
         if bonjour:
-            # handle bonjour routine, if defined
-            if self.bonjour_pointer is not None: bjstr = self.bonjour_pointer()
-            # send it
             for userid in self.extra_lists['bonjour']:
+                # send the default bonjour message
                 self.bot.send_message(userid, mstd.bonjour.format(self.hostname) )
-                if self.bonjour_pointer is not None: self.bot.send_message(userid, bjstr )
+                # send the custom bonjour message, if defined
+                if self.bonjour_pointer is not None: 
+                    bjstr = self.bonjour_pointer()
+                    self.bot.send_message(userid, bjstr )
         
         # exit with no error if dry run
         if dry_run:
             print('end of dry run')
-            sys.exit(0)
+            return
         
         # polling messages
         try: self.bot.infinity_polling()
         except Exception as err:
-            print("ERR in infinity polling")
-            print(err)
-            sys.exit(1)
+            raise Exception('infinity polling has failed') from err
+            

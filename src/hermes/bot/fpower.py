@@ -1,8 +1,6 @@
 
 #########################################################
-#   HERMES - telegram bot for messages & system control
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 12 Aug 2022
+#   HERMES - github.com/baronefr/hermes
 #--------------------------------------------------------
 
 #  This file contains the implementation of the system
@@ -20,13 +18,19 @@ import psutil, datetime
 events = ['POWER_OFF', 'POWER_REBOOT', 'POWER_STATUS']
 
 def poweroff() -> None:
+    """Shuts down the system, via the command `sudo systemctl poweroff`.
+    """
     os.system('sudo systemctl poweroff')
 
 def reboot() -> None:
+    """Reboots the system, via the command `sudo systemctl reboot`.
+    """
     os.system('sudo systemctl reboot')
 
 
 def status() -> list:
+    """Returns a list of messages about the current status of the system. Look at the implementation for more details.
+    """
     try:
         # last system boot
         last_boot = datetime.datetime.fromtimestamp(psutil.boot_time()).strftime("%Y-%m-%d %H:%M:%S")

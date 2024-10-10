@@ -1,8 +1,6 @@
 
 #########################################################
-#   HERMES - telegram bot for messages & system control
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#  coder: Barone Francesco, last edit: 13 Aug 2022
+#   HERMES - github.com/baronefr/hermes
 #--------------------------------------------------------
 
 import telebot
@@ -38,11 +36,11 @@ def make_help_external(eos = None, eqc= None) -> str:
     etc = ''
     if eos is not None:
         for command, pointer in eos.items():
-            etc += str( mstd.help_external.format(command, pointer.__doc__) )
+            etc += str( mstd.help_external_formatter.format(command, pointer.__doc__) )
     if eqc is not None:
         for command, pointer in eqc.items():
-            etc += str( mstd.help_external.format(command, pointer.__doc__) )
-    return( ("  ---------\n" + etc) if etc != '' else '')
+            etc += str( mstd.help_external_formatter.format(command, pointer.__doc__) )
+    return( (mstd.help_external_separator + etc) if etc != '' else '')
 
 
 class handlers():
@@ -183,7 +181,7 @@ class handlers():
     
     
     
-    # tasks
+    # tasks interface
     @ifauthorized
     def query_tasks(self, message):
         
@@ -235,11 +233,13 @@ class handlers():
         self.bot.send_message(message.chat.id, msg, reply_markup=markup)
     
     
+
     
-    
-    # sentinel   TODO
+    # sentinel
     @ifauthorized
     def query_sentinel(self, message):
+        # TODO: check if process is running
+        #raise NotImplementedError('sentinel not yet implemented')
         pass
     
     

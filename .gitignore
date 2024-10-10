@@ -10,3 +10,6 @@ build/*
 # examples images
 examples/*.png
 examples/*.jpg
+
+# built docs 
+docs/_build
