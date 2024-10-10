@@ -48,7 +48,7 @@ In detail, the functionalities of Hermes are developed around three core blocks:
 
 ## Documentation
 
-I tried to include as much as possible in the [package documentation](https://hermesbot.readthedocs.io/en/latest/). Follow through the **Setup** section in order to install and configure Hermes. The rest of the documentation should help with the usage.
+I tried to include as much as possible in the [package documentation](https://hermes-bot.readthedocs.io/en/latest/). Follow through the **Setup** section in order to install and configure Hermes. The rest of the documentation should help with the usage.
 
 
 ---
