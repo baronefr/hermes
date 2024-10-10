@@ -2,18 +2,18 @@
 <p align="center">Telegram bot for messages, task notifications & system management.</p>
 
 ![version](https://img.shields.io/badge/version-2.2-blue)
-
+[![Documentation Status](https://readthedocs.org/projects/bothermes/badge/?version=latest)](https://bothermes.readthedocs.io/en/latest/?badge=latest)
 
 <br>
 
 <div align="center">
-    <img src="img/cover.png">
+    <img src="https://raw.githubusercontent.com/baronefr/hermes/master/img/cover.png">
 </div>
 
 ## What can Hermes do?
 
-Hermes is a python library that provides a Telegram bot interface for your computer.
-It is capable of sending messages, files or images to a specific user, either via terminal commands or inside python scripts.
+Hermes is a Python library that provides a Telegram bot interface for your computer.
+It is capable of sending messages, files, or images to a specific user, either via terminal commands or inside Python scripts.
 Additionally, it can run as a server that interacts with specific commands received through the Telegram bot. 
 
 
@@ -34,8 +34,7 @@ In detail, the functionalities of Hermes are developed around three core blocks:
         - ... create a private log file that can be retrieved through the bot server
     - failsafe: an error in Hermes does not stop your code
 
-
-<br><br>
+<br>
 
 ### Requirements
 
@@ -43,13 +42,13 @@ In detail, the functionalities of Hermes are developed around three core blocks:
 * Python 3.8 or above
     - the following packages are required: `pyTelegramBotAPI termcolor`
 
+<br>
 
-<br><br>
+## [Documentation](https://bothermes.readthedocs.io/en/latest/)
 
-## Documentation
+I tried to include as much as possible in the [package documentation](https://bothermes.readthedocs.io/en/latest/). Follow through the **Setup** section to install and configure Hermes. The rest of the documentation should help with the usage.
 
-I tried to include as much as possible in the [package documentation](https://hermes-bot.readthedocs.io/en/latest/). Follow through the **Setup** section in order to install and configure Hermes. The rest of the documentation should help with the usage.
-
+<br>
 
 ---
 <p align="center">
