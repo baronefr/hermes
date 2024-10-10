@@ -5,7 +5,7 @@
 #--------------------------------------------------------
 
 [project]
-name = "hermes-bot"
+name = "botHermes"
 version = "2.2.0"
 description = "Telegram bot for messages, task notifications & system management"
 readme = "README.md"
