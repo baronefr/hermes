@@ -81,7 +81,7 @@ I recommend to **close and re-open your terminal** to make sure that Hermes has 
 
 |
 |
-|
+
 
 
 .. _systemdsetup:

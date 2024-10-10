@@ -10,7 +10,6 @@ The CLI of Hermes is accessible via the ``hermes`` command:
 In the following guide, I wish to quickly show the main features that are available via CLI.
 
 |
-|
 
 Sending messages
 ================
@@ -39,7 +38,6 @@ Use the flags ``-i`` (``-f``), or explicitly ``--image`` (``--file``), to attach
     hermes -m 'Message to be sent' -f attachment.pdf
 
 |
-|
 
 Integrate Hermes with sh scripts
 ================================
@@ -57,7 +55,6 @@ It is possible to invoke Hermes inside shell scripts. For instance, let's look a
 
     hermes -m 'the script execution is completed'
 
-|
 |
 
 Run a command
@@ -112,7 +109,6 @@ The lines beginning with the text ``%HERMES%`` are hooked from the stdout buffer
 It is possible to customize the hook flag ``%HERMES%`` with the option ``--hook YOURHOOKFLAG``.
 
 |
-|
 
 Run the Hermes bot server
 =========================
@@ -126,7 +122,6 @@ The Hermes Bot functionalities require a process that executes the infinity_poll
 .. note::
     If you wish to execute the **server in background**, have a look at the :ref:`systemd setup procedure<systemdsetup>`.
 
-|
 |
 
 Diagnostics and troubleshooting

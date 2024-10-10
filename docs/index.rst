@@ -10,7 +10,6 @@ Hermes is a python library that provides a Telegram bot interface for your compu
 It is capable of sending messages, files or images to a specific user, either via terminal commands or inside python scripts.
 Additionally, it can run as a server that interacts with specific commands received through the Telegram bot. 
 
-
 In detail, the functionalities of Hermes are developed around three core blocks:
 
 - **CLI**

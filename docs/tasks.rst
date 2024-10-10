@@ -1,13 +1,14 @@
 Hermes Tasks
 ############
 
-An Hermes Task is an object that can be created in a Python script to provide notifications (messages, images, plots) and track the execution of your script through via :ref:`waypoints<waypoints>`.
+An Hermes Task is an object that can be created in a Python script to provide notifications (messages, images, plots) and track the execution of your script through :ref:`waypoints<waypoints>`.
 
 The content of this page is just a quick reference to the usage of Hermes Tasks.
-For more options or detailed information, I recomment to read the Task class documentation: :py:meth:`hermes.task.task`.
+For more options or detailed information, I suggest to read the Task class documentation: :py:meth:`hermes.task.task`.
 
 Additionally, I recommend to have a look at `this Jupyter notebook <https://github.com/baronefr/hermes/blob/main/examples/task_demo.ipynb>`_ for a complete and documented example of usage.
 
+|
 
 Creating a Task
 ---------------
@@ -22,11 +23,12 @@ The **alias** argument is used to assign an explicit name to the task. It should
 .. note::
     By default, the messages will be sent to all the users specified in the :ref:`Hermes configuration directory<confdir>`. To make the Task object send the messages to a specific user, or more user, check out :ref:`this paragraph<moreusertasks>` in the Advanced usage guide.
 
+|
 
 Sending messages and images
 ---------------------------
 
-To send a message, use the method ``notify``:
+To send a message, use the method ``notify()``:
 
 .. code-block:: python
 
@@ -37,7 +39,7 @@ To send an image, the method ``notify`` accepts as optional argument ``img`` the
 
 .. code-block:: python
 
-    ht.notify(img = 'sample.jpg', txt = 'this text is sent ')
+    ht.notify(img = 'sample.jpg', txt = 'this text is attached to the picture')
 
 
 Sending plots
@@ -52,6 +54,8 @@ Have a look at `this Jupyter notebook <https://github.com/baronefr/hermes/blob/m
 
 
 .. _waypoints:
+
+|
 
 Use of waypoints
 ----------------
@@ -86,6 +90,7 @@ Using the optional flag *timed*, ``ht.waypoint(timed=True)``, the message of the
 .. image:: ../img/waypoint_timed.png
     :width: 150
 
+|
 
 Closing a Task
 --------------

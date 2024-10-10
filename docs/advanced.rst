@@ -20,7 +20,6 @@ The usage **logs** are collected in the ``logs/`` folder. The log policy of Herm
 Finally, the Hermes configuration directory contains the declarations of **custom bot commands**. For instance, the file ``oneshot.py`` will contain some custom commands. See the :ref:`specific section<customcommands>` for more information.
 
 |
-|
 
 .. _moreuser:
 
@@ -99,7 +98,6 @@ It is possible to specify the users that will receive the messages at the creati
 The **default behavior** is to send the message to all the users that are marked as *active* in the ``users.key`` file.
 
 
-|
 |
 
 .. _customcommands:
